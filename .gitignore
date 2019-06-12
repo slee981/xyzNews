@@ -1,0 +1,10 @@
+# ignore datasets with actual scraped articles
+data
+/articles
+*.csv
+*.zip
+*.tar.gz
+
+# ignore presentation and image files 
+presentation
+

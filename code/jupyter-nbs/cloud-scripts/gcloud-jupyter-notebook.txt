@@ -1,0 +1,56 @@
+################################################################################
+# Run a Jupyter Notebook from Google Cloud
+################################################################################
+
+  1. Open "console.cloud.google.com" 
+      -> set up an account with payment info
+
+  2. Create a new VM instance (i.e. compute)
+      -> choose resources, location, etc. 
+
+  3. Allow http and https traffic through firewall 
+
+  4. Make IP address static through VPC network (optional)
+
+  5. Set firewall rule to allow
+      -> source IP ranges: O.0.0.0/0
+      -> tcp: 5000 (or whatever port you want to use)
+
+  6. Start VM instance and install jupyter notebook
+      -> $ wget http://repo.continuum.io/archive/Anaconda3-4.0.0-Linux-x86_64.sh
+      -> $ bash Anaconda3-4.0.0-Linux-x86_64.sh
+      -> $ pip install tensorflow keras pandas
+
+  7. Set up VM server
+      -> $ jupyter notebook --generate-config
+      -> 
+            c = get_config()
+            c.NotebookApp.ip = '*'
+	    c.NotebookApp.open_browser = False
+	    c.NotebookApp.port = 5000
+
+  8. Launch Jupyter Notebook 
+      -> $ jupyter-notebook --no-browser --port=5000
+      -> ### navigate to http://<External Static IP Addr>:5000
+
+################################################################################
+# Connect Bucket Storage
+################################################################################
+
+  1. Open "console.cloud.google.com" 
+  
+  2. Create new storage bucket 
+      -> give it a good name like "storage-bucket"
+
+  3. Create directory from VM instance ssh session
+      -> $ mkdir data
+
+  4. Install gcsfuse if not already installed 
+
+  5. Mount storage
+      -> $ gcsfuse storage-bucket ./data
+
+  6. Unmount storage 
+      -> $ fusermount -u ./data/
+      -> $ sudo umount ./data/
+

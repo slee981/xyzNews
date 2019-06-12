@@ -1,0 +1,1 @@
+$ gcloud compute scp news-jupyter:/home/smlee_981/train-fox-pbs.ipynb C:\Users\Stephen\Dropbox\CodeWorkspace\other\Anaconda\NLP\thesis\cloud-nb\
