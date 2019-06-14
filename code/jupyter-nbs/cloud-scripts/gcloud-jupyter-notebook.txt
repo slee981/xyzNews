@@ -16,12 +16,12 @@
       -> source IP ranges: O.0.0.0/0
       -> tcp: 5000 (or whatever port you want to use)
 
-  6. Start VM instance and install jupyter notebook
+  6. Start VM instance, ssh in, and install jupyter notebook
       -> $ wget http://repo.continuum.io/archive/Anaconda3-4.0.0-Linux-x86_64.sh
       -> $ bash Anaconda3-4.0.0-Linux-x86_64.sh
       -> $ pip install tensorflow keras pandas
 
-  7. Set up VM server
+  7. Set up VM server for notebook
       -> $ jupyter notebook --generate-config
       -> 
             c = get_config()
@@ -31,7 +31,8 @@
 
   8. Launch Jupyter Notebook 
       -> $ jupyter-notebook --no-browser --port=5000
-      -> ### navigate to http://<External Static IP Addr>:5000
+  
+  9. Navigate to http://<External Static IP Addr>:5000
 
 ################################################################################
 # Connect Bucket Storage
