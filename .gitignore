@@ -1,10 +1,10 @@
 # ignore datasets with actual scraped articles
 data
-/articles
-*.csv
-*.zip
-*.tar.gz
 
 # ignore presentation and image files 
-presentation
+presentation/images
+presentation/proposal
+
+# ignore todo list
+docs/todo.txt
 

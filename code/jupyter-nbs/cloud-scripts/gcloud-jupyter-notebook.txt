@@ -23,11 +23,13 @@
 
   7. Set up VM server for notebook
       -> $ jupyter notebook --generate-config
-      -> 
-            c = get_config()
-            c.NotebookApp.ip = '*'
+
+      ##########
+        c = get_config()
+        c.NotebookApp.ip = '*'
 	    c.NotebookApp.open_browser = False
 	    c.NotebookApp.port = 5000
+      ##########
 
   8. Launch Jupyter Notebook 
       -> $ jupyter-notebook --no-browser --port=5000
