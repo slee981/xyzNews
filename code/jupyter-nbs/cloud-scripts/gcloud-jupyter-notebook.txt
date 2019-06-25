@@ -17,9 +17,14 @@
       -> tcp: 5000 (or whatever port you want to use)
 
   6. Start VM instance, ssh in, and install jupyter notebook
+      -> $ sudo apt-get update
+      -> $ sudo apt-get upgrade
+      -> $ sudo apt install python-pip
       -> $ wget http://repo.continuum.io/archive/Anaconda3-4.0.0-Linux-x86_64.sh
       -> $ bash Anaconda3-4.0.0-Linux-x86_64.sh
       -> $ pip install tensorflow keras pandas
+      -> $ sudo apt install jupyter-core
+      -> $ sudo apt install jupyter-notebook
 
   7. Set up VM server for notebook
       -> $ jupyter notebook --generate-config
