@@ -12,7 +12,7 @@
 
   4. Make IP address static through VPC network (optional)
 
-  5. Set firewall rule to allow
+  5. Set firewall rule to allow (in VPC Network)
       -> source IP ranges: O.0.0.0/0
       -> tcp: 5000 (or whatever port you want to use)
 
@@ -22,22 +22,25 @@
       -> $ sudo apt install python-pip
       -> $ wget http://repo.continuum.io/archive/Anaconda3-4.0.0-Linux-x86_64.sh
       -> $ bash Anaconda3-4.0.0-Linux-x86_64.sh
-      -> $ pip install tensorflow keras pandas
-      -> $ sudo apt install jupyter-core
-      -> $ sudo apt install jupyter-notebook
+      -> $ pip3 install tensorflow keras pandas
+      -> $ pip3 install jupyter
+      -> $ sudo apt-get install jupyter-notebook
 
   7. Set up VM server for notebook
       -> $ jupyter notebook --generate-config
 
-      ##########
-        c = get_config()
-        c.NotebookApp.ip = '*'
-	    c.NotebookApp.open_browser = False
-	    c.NotebookApp.port = 5000
-      ##########
+            ##############################
+            # open with vim
+            ##############################
+            c = get_config()
+            c.NotebookApp.ip = '*'
+            c.NotebookApp.open_browser = False
+            c.NotebookApp.port = 5000
+
+            ##############################
 
   8. Launch Jupyter Notebook 
-      -> $ jupyter-notebook --no-browser --port=5000
+      -> $ jupyter notebook --no-browser --port=5000
   
   9. Navigate to http://<External Static IP Addr>:5000
 
@@ -54,6 +57,12 @@
       -> $ mkdir data
 
   4. Install gcsfuse if not already installed 
+      -> $ export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+      -> $ echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+      -> $ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+      -> $ sudo apt-get update
+      -> $ sudo apt-get install gcsfuse
+
 
   5. Mount storage
       -> $ gcsfuse storage-bucket ./data
