@@ -2,6 +2,7 @@ from keras.models import load_model
 from keras.utils import to_categorical
 import flask
 import numpy as np
+import tensorflow as tf
 from tqdm import tqdm
 import os
 
@@ -11,10 +12,11 @@ MODEL_PATH = "../models/xyzNews-classifier.h5"
 EMBEDDING_PATH = "word_embedding/glove.840B.300d.txt"
 EMBEDDINGS_INDEX = {}
 MODEL = None
+graph = tf.get_default_graph()
 
 
 def get_embeddings():
-    print("\nReading in word embeddings. This may take a minute.")
+    print("\nReading in word embeddings. This may take a couple minutes.")
     with open(EMBEDDING_PATH, encoding="utf8") as embed:
         for line in tqdm(embed):
             values = line.split(" ")
@@ -30,13 +32,14 @@ def prepare_article(text, article_length=500):
     # look for word embedding, return zero array otherwise.
     embeds = [EMBEDDINGS_INDEX.get(x, empty_emb) for x in text]
     embeds += [empty_emb] * (article_length - len(embeds))
-    return np.array(embeds)
+    return np.array(embeds).reshape(1, 500, 300)
 
 
 def load_data_and_model():
     global MODEL
     get_embeddings()
     MODEL = load_model(MODEL_PATH)
+    MODEL._make_predict_function()
 
 
 @app.route("/predict", methods=["POST"])
@@ -53,7 +56,10 @@ def predict():
             print(f"\n\nThe input text is: {txt}")
 
             txt = prepare_article(txt)
-            pred = MODEL.predict(txt, batch_size=1)
+
+            global graph
+            with graph.as_default():
+                pred = MODEL.predict(txt, batch_size=1)
             print(f"\n\nThe prediction is {pred}")
 
             data["predictions"] = pred
