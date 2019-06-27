@@ -8,8 +8,8 @@ import os
 
 app = flask.Flask(__name__)
 
-MODEL_PATH = "../models/xyzNews-classifier.h5"
-EMBEDDING_PATH = "word_embedding/glove.840B.300d.txt"
+MODEL_PATH = "../../models/xyzNews-classifier.h5"
+EMBEDDING_PATH = "../word_embedding/glove.840B.300d.txt"
 EMBEDDINGS_INDEX = {}
 MODEL = None
 graph = tf.get_default_graph()
@@ -18,11 +18,14 @@ graph = tf.get_default_graph()
 def get_embeddings():
     print("\nReading in word embeddings. This may take a couple minutes.")
     with open(EMBEDDING_PATH, encoding="utf8") as embed:
-        for line in tqdm(embed):
-            values = line.split(" ")
-            word = values[0]
-            coefs = np.asarray(values[1:], dtype="float32")
-            EMBEDDINGS_INDEX[word] = coefs
+        try:
+            for line in tqdm(embed):
+                values = line.split(" ")
+                word = values[0]
+                coefs = np.asarray(values[1:], dtype="float32")
+                EMBEDDINGS_INDEX[word] = coefs
+        except KeyboardInterrupt:
+            print("Stopping... ")
 
 
 def prepare_article(text, article_length=500):

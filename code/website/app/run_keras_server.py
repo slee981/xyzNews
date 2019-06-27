@@ -20,11 +20,14 @@ graph = tf.get_default_graph()
 def get_embeddings():
     print("\nReading in word embeddings. This may take a couple minutes.")
     with open(EMBEDDING_PATH, encoding="utf8") as embed:
-        for line in tqdm(embed):
-            values = line.split(" ")
-            word = values[0]
-            coefs = np.asarray(values[1:], dtype="float32")
-            EMBEDDINGS_INDEX[word] = coefs
+        try:
+            for line in tqdm(embed):
+                values = line.split(" ")
+                word = values[0]
+                coefs = np.asarray(values[1:], dtype="float32")
+                EMBEDDINGS_INDEX[word] = coefs
+        except KeyboardInterrupt:
+            print("Stopping... ")
 
 
 def prepare_article(text, article_length=500):
@@ -72,6 +75,35 @@ def home():
     # return the data dictionary as a JSON response
     # return flask.jsonify(data)
     return flask.render_template("index.html", form=form)
+
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    # initialize the data dictionary that will be returned
+    data = {"success": False}
+
+    # ensure an article was properly uploaded to our endpoint
+    if flask.request.method == "POST":
+        if flask.request.form.get("article"):
+            txt = flask.request.form.get("article")
+            txt = prepare_article(txt)
+
+            global graph
+            with graph.as_default():
+                pred = MODEL.predict(txt, batch_size=1)
+
+            # model is trained to represent:
+            # 0 - PBS
+            # 1 - Vox
+            # 2 - Fox
+            pred = pred[0].tolist()
+            prediction = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
+            data["prediction"] = prediction
+            data["success"] = True
+
+    # return the data dictionary as a JSON response
+    # return flask.jsonify(data)
+    return flask.jsonify(data)
 
 
 # if this is the main thread of execution first load the model and
