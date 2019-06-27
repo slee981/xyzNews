@@ -3,27 +3,33 @@
 
 <head>
     <title>xyzNews</title>
-    <!--
-      <link rel="stylesheet" href="/static/css/main.css">
-    -->
-
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-theme.min.css') }}">
 </head>
 
 <body>
+
+    <div class="container"><br>
+        <center>
+            <h1>xyzNews</h1>
+        </center>
+    </div>
+
     <div class="container">
-        <h1>
-            <center>xyzNews</center>
-        </h1>
+        <center>
+            <form method=post>
+                {{ form.csrf }}
 
-        {% block content %}
-        <form method=post>
+                <div class="form-group">
+                    <label>Article Text</label>
+                    <textarea class="form-control" id="article" name="article" rows="20"></textarea>
+                </div>
 
-            {{ form.article }}
-
-            {{ form.submit }}
-        </form>
-        {% endblock %}
-
+                <center>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </center>
+            </form>
+        </center>
     </div>
 </body>
 
