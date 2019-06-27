@@ -1,7 +1,7 @@
 import requests
 import os
 
-KERAS_REST_API_URL = "http://localhost:5000"
+KERAS_REST_API_URL = "http://localhost:5000/predict"
 ARTICLES_DIR = os.path.abspath("articles")
 TEST_DIR = os.getcwd()
 
@@ -18,8 +18,8 @@ for article in test_articles:
     payload = {"article": article}
     r = requests.post(KERAS_REST_API_URL, data=payload).json()
 
-    for source in r["predictions"].keys():
-        res = r["predictions"]
+    for source in r["prediction"].keys():
+        res = r["prediction"]
         print(f"{source}: {round(res[source], 3)}")
 
 # change back to original dir

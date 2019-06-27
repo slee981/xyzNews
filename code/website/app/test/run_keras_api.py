@@ -6,12 +6,10 @@ import tensorflow as tf
 from tqdm import tqdm
 import os
 
-from inputForm import InputForm
-
 app = flask.Flask(__name__)
 
-MODEL_PATH = "../models/xyzNews-classifier.h5"
-EMBEDDING_PATH = "word_embedding/glove.840B.300d.txt"
+MODEL_PATH = "../../models/xyzNews-classifier.h5"
+EMBEDDING_PATH = "../word_embedding/glove.840B.300d.txt"
 EMBEDDINGS_INDEX = {}
 MODEL = None
 graph = tf.get_default_graph()
@@ -44,10 +42,10 @@ def load_data_and_model():
     MODEL._make_predict_function()
 
 
-@app.route("/", methods=["GET", "POST"])
-def home():
+@app.route("/predict", methods=["POST"])
+def predict():
     # initialize the data dictionary that will be returned
-    form = InputForm(flask.request.form)
+    data = {"success": False}
 
     # ensure an article was properly uploaded to our endpoint
     if flask.request.method == "POST":
@@ -65,12 +63,12 @@ def home():
             # 2 - Fox
             pred = pred[0].tolist()
             prediction = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
-
-            return flask.render_template("location.html", prediction=prediction)
+            data["prediction"] = prediction
+            data["success"] = True
 
     # return the data dictionary as a JSON response
     # return flask.jsonify(data)
-    return flask.render_template("index.html", form=form)
+    return flask.jsonify(data)
 
 
 # if this is the main thread of execution first load the model and
