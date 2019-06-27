@@ -6,6 +6,8 @@ import tensorflow as tf
 from tqdm import tqdm
 import os
 
+from inputForm import InputForm
+
 app = flask.Flask(__name__)
 
 MODEL_PATH = "../models/xyzNews-classifier.h5"
@@ -42,11 +44,11 @@ def load_data_and_model():
     MODEL._make_predict_function()
 
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    # initialize the data dictionary that will be returned from the
-    # view
+@app.route("/", methods=["GET", "POST"])
+def home():
+    # initialize the data dictionary that will be returned
     data = {"success": False}
+    form = InputForm(flask.request.form)
 
     # ensure an article was properly uploaded to our endpoint
     if flask.request.method == "POST":
@@ -63,13 +65,13 @@ def predict():
             # 1 - Vox
             # 2 - Fox
             pred = pred[0].tolist()
-            predictions = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
+            prediction = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
 
-            data["predictions"] = predictions
-            data["success"] = True
+            return flask.render_template("location.html", prediction=prediction)
 
     # return the data dictionary as a JSON response
-    return flask.jsonify(data)
+    # return flask.jsonify(data)
+    return flask.render_template("index.html", form=form)
 
 
 # if this is the main thread of execution first load the model and

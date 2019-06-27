@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>xyzNews</title>
+    <!--
+      <link rel="stylesheet" href="/static/css/main.css">
+    -->
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            <center>xyzNews</center>
+        </h1>
+
+        {% block content %}
+        <form method=post>
+
+            {{ form.article }}
+
+            {{ form.submit }}
+        </form>
+        {% endblock %}
+
+    </div>
+</body>
+
+</html>

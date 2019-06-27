@@ -1,7 +1,7 @@
 import requests
 import os
 
-KERAS_REST_API_URL = "http://localhost:5000/predict"
+KERAS_REST_API_URL = "http://localhost:5000"
 ARTICLES_DIR = os.path.abspath("articles")
 TEST_DIR = os.getcwd()
 
