@@ -28,7 +28,7 @@ def get_embeddings():
 def prepare_article(text, article_length=500):
     empty_emb = np.zeros(300)  # each word is represented by a length 300 vector
     text = text.split()[:article_length]  # each article is length 500
-
+    text = [i for i in text if i != ""]
     # look for word embedding, return zero array otherwise.
     embeds = [EMBEDDINGS_INDEX.get(x, empty_emb) for x in text]
     embeds += [empty_emb] * (article_length - len(embeds))
@@ -48,21 +48,24 @@ def predict():
     # view
     data = {"success": False}
 
-    # ensure an image was properly uploaded to our endpoint
+    # ensure an article was properly uploaded to our endpoint
     if flask.request.method == "POST":
-
         if flask.request.form.get("article"):
             txt = flask.request.form.get("article")
-            print(f"\n\nThe input text is: {txt}")
-
             txt = prepare_article(txt)
 
             global graph
             with graph.as_default():
                 pred = MODEL.predict(txt, batch_size=1)
-            print(f"\n\nThe prediction is {pred}")
 
-            data["predictions"] = pred
+            # model is trained to represent:
+            # 0 - PBS
+            # 1 - Vox
+            # 2 - Fox
+            pred = pred[0].tolist()
+            predictions = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
+
+            data["predictions"] = predictions
             data["success"] = True
 
     # return the data dictionary as a JSON response
