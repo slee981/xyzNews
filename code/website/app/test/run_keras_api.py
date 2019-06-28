@@ -8,7 +8,7 @@ import os
 
 app = flask.Flask(__name__)
 
-MODEL_PATH = "../../models/xyzNews-classifier.h5"
+MODEL_PATH = "../models/xyzNews-classifier.h5"
 EMBEDDING_PATH = "../word_embedding/glove.840B.300d.txt"
 EMBEDDINGS_INDEX = {}
 MODEL = None

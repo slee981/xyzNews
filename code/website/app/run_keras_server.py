@@ -10,7 +10,7 @@ from inputForm import InputForm
 
 app = flask.Flask(__name__)
 
-MODEL_PATH = "../models/xyzNews-classifier.h5"
+MODEL_PATH = "./models/xyzNews-classifier.h5"
 EMBEDDING_PATH = "word_embedding/glove.840B.300d.txt"
 EMBEDDINGS_INDEX = {}
 MODEL = None
@@ -50,8 +50,9 @@ def load_data_and_model():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    # initialize the data dictionary that will be returned
+    # init form and predictions
     form = InputForm(flask.request.form)
+    prediction = None
 
     # ensure an article was properly uploaded to our endpoint
     if flask.request.method == "POST":
@@ -70,7 +71,7 @@ def home():
             pred = pred[0].tolist()
             prediction = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
 
-            return flask.render_template("location.html", prediction=prediction)
+            return flask.render_template("index.html", form=form, prediction=prediction)
 
     # return the data dictionary as a JSON response
     # return flask.jsonify(data)
@@ -111,7 +112,7 @@ def predict():
 if __name__ == "__main__":
     print(
         (
-            "Loading Keras model and Flask starting server..."
+            "Loading Keras model and Flask starting server... "
             "please wait until server has fully started"
         )
     )
