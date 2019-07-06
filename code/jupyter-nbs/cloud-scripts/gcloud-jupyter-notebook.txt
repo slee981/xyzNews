@@ -67,7 +67,7 @@
   5. Mount storage
       -> $ gcsfuse storage-bucket ./data
 
-  6. Unmount storage 
+  6. Unmount storage (either)
       -> $ fusermount -u ./data/
       -> $ sudo umount ./data/
 
