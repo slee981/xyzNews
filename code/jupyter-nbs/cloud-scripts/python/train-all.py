@@ -199,7 +199,7 @@ def train(df, file_out):
                             write_row(info_1, file_out)
                             write_row(info_2, file_out)
 
-                            message = "UPDATED: training on {df}, loop {c}".format(df=df, c=counter)
+                            message = "UPDATED: f1 scores of {one} and {two}".format(one=res_1, two=res_2)
                             send_text(message)
                             counter += 1
         
@@ -292,3 +292,4 @@ send_text(message)
 train(df_resample, 'results_all_resample.csv')
 train(df_subsample, 'results_all_subsample.csv')
 
+send_text('Complete!')
