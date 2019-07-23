@@ -22,3 +22,5 @@ paper/~$utline.docx
 *.blg
 *.synctex.gz 
 *.DS_Store
+
+.ipynb_checkpoints
