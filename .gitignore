@@ -11,3 +11,11 @@ docs/todo.txt
 # ignore word embeddings
 # use glove.840B.300d.txt
 code/website/app/word_embedding
+
+paper/~$utline.docx
+*.log
+*.aux
+*.bbl
+*.blg
+*.synctex.gz 
+*.DS_Store
