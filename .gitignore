@@ -1,5 +1,8 @@
 # ignore datasets with actual scraped articles
-data
+data/archive 
+data/raw
+data/articles.csv 
+data/clean_article_df.csv
 
 # ignore presentation and image files 
 presentation/images
