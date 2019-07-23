@@ -16,6 +16,7 @@ docs/todo.txt
 code/website/app/word_embedding
 
 paper/~$utline.docx
+paper/docs/~$utline.docx
 *.log
 *.aux
 *.bbl

@@ -47,7 +47,6 @@ FOLDER_READ = '/home/smlee_981/data'
 FOLDER_WRITE = '/home/smlee_981/results'
 FILE = 'clean_article_df.csv'
 EMBEDS = 'glove.840B.300d.txt'
-FILE_OUT = 'results_all_{}.csv'
 ARTICLE_LENGTH = 500                                 # max length for an article
 
 SID = 'AC452ff5bfa2b523d0380e4938761d59ba'
@@ -100,7 +99,7 @@ def send_text(message):
 # Define and Train Models
 ################################################################################
 
-def train(df):
+def train(df, file_out):
 
     '''
        INPUT... a dataframe with 'clean_articles' and 'targets'
@@ -109,7 +108,6 @@ def train(df):
 
     # Set headers on output file
 
-    file_out = FILE_OUT.format(df)
     headers = ['Model', 'Article Length', 'Batch Size', 'Dropout', 'Recurant Dropout', 'Steps Per Epoch', 'F1']
     write_row(headers, file_out)
 
@@ -125,77 +123,89 @@ def train(df):
     # Split into test and training
     train_df, test_df = train_test_split(df, test_size=0.1)
 
-    counter = 1
-    for l in ARTICLE_LENGTH: 
+    message = "Starting to train"
+    send_text(message)
 
-        x_test = np.array([text_to_array(x, article_length=l) for x in tqdm(test_df["clean_articles"])])
-        y_test = np.array([target_to_one_hot(t) for t in tqdm(test_df["targets"])])
-
-        for bs in BATCH_SIZE: 
-            for d in DROPOUT: 
-                for rd in REC_DROPOUT: 
-                    for steps in STEPS_PER_EPOCH: 
+    try: 
             
-                        # Model 1: Bidirectional LSTM
-                        # notes...
-                        #
-                        #      batch_size         -> words per batch
-                        #      article_length     -> words per article
-                        #      embed_length       -> vector length per word
+        counter = 1
+        for l in ARTICLE_LENGTH: 
 
-                        input_shape = (l, 300)
-                        lstm_in = int(bs/2)
+            x_test = np.array([text_to_array(x, article_length=l) for x in tqdm(test_df["clean_articles"])])
+            y_test = np.array([target_to_one_hot(t) for t in tqdm(test_df["targets"])])
 
-                        model_1 = Sequential()
-                        model_1.add(Bidirectional(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd), input_shape=input_shape))
-                        model_1.add(Activation('relu'))
-                        model_1.add(Dense(3, activation="sigmoid"))
-                        model_1.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+            for bs in BATCH_SIZE: 
+                for d in DROPOUT: 
+                    for rd in REC_DROPOUT: 
+                        for steps in STEPS_PER_EPOCH: 
+                
+                            # Model 1: Bidirectional LSTM
+                            # notes...
+                            #
+                            #      batch_size         -> words per batch
+                            #      article_length     -> words per article
+                            #      embed_length       -> vector length per word
 
-                        # Model 2: Regular LSTM
-                        # note...
-                        #
-                        #      batch_size         -> words per batch
-                        #      article_length     -> words per article
-                        #      embed_length       -> vector length per word
+                            input_shape = (l, 300)
+                            lstm_in = int(bs/2)
 
-                        lstm_in = int(bs)
+                            model_1 = Sequential()
+                            model_1.add(Bidirectional(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd), input_shape=input_shape))
+                            model_1.add(Activation('relu'))
+                            model_1.add(Dense(3, activation="sigmoid"))
+                            model_1.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-                        model_2 = Sequential()
-                        model_2.add(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd, input_shape=input_shape))
-                        model_2.add(Activation('relu'))
-                        model_2.add(Dense(3, activation="sigmoid"))
-                        model_2.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+                            # Model 2: Regular LSTM
+                            # note...
+                            #
+                            #      batch_size         -> words per batch
+                            #      article_length     -> words per article
+                            #      embed_length       -> vector length per word
 
-                        # Train
+                            lstm_in = int(bs)
 
-                        data = batch_gen(train_df, batch_size=bs, article_length=l)
-                        model_1.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
-                        model_2.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
+                            model_2 = Sequential()
+                            model_2.add(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd, input_shape=input_shape))
+                            model_2.add(Activation('relu'))
+                            model_2.add(Dense(3, activation="sigmoid"))
+                            model_2.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-                        # Look at predictions
+                            # Train
 
-                        y_pred_1 = model_1.predict(x_test, batch_size=bs)
-                        y_pred_class_1 = np.argmax(y_pred_1, axis=1)
-                        y_pred_one_hot_1 = to_categorical(y_pred_class_1, num_classes=3)
+                            message = "Fitting the models"
+                            send_text(message)
 
-                        y_pred_2 = model_2.predict(x_test, batch_size=bs)
-                        y_pred_class_2 = np.argmax(y_pred_2, axis=1)
-                        y_pred_one_hot_2 = to_categorical(y_pred_class_2, num_classes=3)
+                            data = batch_gen(train_df, batch_size=bs, article_length=l)
+                            model_1.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
+                            model_2.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
 
-                        res_1 = metrics.f1_score(y_test, y_pred_one_hot_1, average='micro')
-                        res_2 = metrics.f1_score(y_test, y_pred_one_hot_2, average='micro')
+                            # Look at predictions
 
-                        # headers = ['Model', 'Article Length', 'Batch Size', 'Dropout', 'Recurant Dropout', 'Steps Per Epoch', 'F1']
-                        info_1 = ["Bidirectional", l, bs, d, rd, steps, res_1]
-                        info_2 = ["Regular", l, bs, d, rd, steps, res_2]
+                            y_pred_1 = model_1.predict(x_test, batch_size=bs)
+                            y_pred_class_1 = np.argmax(y_pred_1, axis=1)
+                            y_pred_one_hot_1 = to_categorical(y_pred_class_1, num_classes=3)
 
-                        write_row(info_1, file_out)
-                        write_row(info_2, file_out)
+                            y_pred_2 = model_2.predict(x_test, batch_size=bs)
+                            y_pred_class_2 = np.argmax(y_pred_2, axis=1)
+                            y_pred_one_hot_2 = to_categorical(y_pred_class_2, num_classes=3)
 
-                        message = "UPDATED: training on {df}, loop {c}".format(df=df, c=counter)
-                        send_text(message)
-                        counter += 1
+                            res_1 = metrics.f1_score(y_test, y_pred_one_hot_1, average='micro')
+                            res_2 = metrics.f1_score(y_test, y_pred_one_hot_2, average='micro')
+
+                            # headers = ['Model', 'Article Length', 'Batch Size', 'Dropout', 'Recurant Dropout', 'Steps Per Epoch', 'F1']
+                            info_1 = ["Bidirectional", l, bs, d, rd, steps, res_1]
+                            info_2 = ["Regular", l, bs, d, rd, steps, res_2]
+
+                            write_row(info_1, file_out)
+                            write_row(info_2, file_out)
+
+                            message = "UPDATED: training on {df}, loop {c}".format(df=df, c=counter)
+                            send_text(message)
+                            counter += 1
+        
+    except: 
+        message = "ERROR"
+        send_text(message)
 
 ################################################################################
                  
@@ -279,6 +289,6 @@ send_text(message)
 # Main
 ################################################################################               
 
-train(df_resample)
-train(df_subsample)
+train(df_resample, 'results_all_resample.csv')
+train(df_subsample, 'results_all_subsample.csv')
 
