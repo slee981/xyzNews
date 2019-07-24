@@ -64,11 +64,13 @@ def write_row(lst, file_out):
         writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         writer.writerow(lst)
 
-def relabel(source, target):
-    if source == target:
+def relabel(source, target_one, target_two):
+    if source == target_one:
         return 1 
-    else: 
+    elif source == target_two: 
         return 0
+    else: 
+        raise TypeError
 
 def text_to_array(text, article_length=500):
     empty_emb = np.zeros(300)                   # each word is represented by a length 300 vector
@@ -89,11 +91,16 @@ def batch_gen(train_df, batch_size=64, article_length=500, num_classes=3):
             targets = train_df['targets'][i*batch_size: (i+1)*batch_size]
             
             text_arr = np.array([text_to_array(text, article_length=article_length) for text in texts])
+            targets = np.array(targets)
             yield text_arr, targets
 
 def send_text(message): 
     client = Client(SID, TOKEN)
     client.messages.create(to=TO_, from_=FROM_, body=message)
+
+def log(message, file_name): 
+    with open(file_name, 'a') as f: 
+        f.write(message)
 
 ################################################################################
 # Define and Train Models
@@ -125,76 +132,83 @@ def train(df, file_out):
 
     send_text("Starting to train")
 
-    counter = 1
-    for l in ARTICLE_LENGTH: 
+    try: 
 
-        x_test = np.array([text_to_array(x, article_length=l) for x in tqdm(test_df["clean_articles"])])
-        y_test = np.array(test_df["targets"])
+        counter = 1
+        for l in ARTICLE_LENGTH: 
 
-        for bs in BATCH_SIZE: 
-            for d in DROPOUT: 
-                for rd in REC_DROPOUT: 
-                    for steps in STEPS_PER_EPOCH: 
-            
-                        # Model 1: Bidirectional LSTM
-                        # notes...
-                        #
-                        #      batch_size         -> words per batch
-                        #      article_length     -> words per article
-                        #      embed_length       -> vector length per word
+            x_test = np.array([text_to_array(x, article_length=l) for x in tqdm(test_df["clean_articles"])])
+            y_test = np.array(test_df["targets"])
 
-                        input_shape = (l, 300)
-                        lstm_in = int(bs/2)
+            for bs in BATCH_SIZE: 
+                for d in DROPOUT: 
+                    for rd in REC_DROPOUT: 
+                        for steps in STEPS_PER_EPOCH: 
+                
+                            # Model 1: Bidirectional LSTM
+                            # notes...
+                            #
+                            #      batch_size         -> words per batch
+                            #      article_length     -> words per article
+                            #      embed_length       -> vector length per word
 
-                        model_1 = Sequential()
-                        model_1.add(Bidirectional(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd), input_shape=input_shape))
-                        model_1.add(Activation('relu'))
-                        model_1.add(Dense(1, activation="sigmoid"))
-                        model_1.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+                            input_shape = (l, 300)
+                            lstm_in = int(bs/2)
 
-                        # Model 2: Regular LSTM
-                        # note...
-                        #
-                        #      batch_size         -> words per batch
-                        #      article_length     -> words per article
-                        #      embed_length       -> vector length per word
+                            model_1 = Sequential()
+                            model_1.add(Bidirectional(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd), input_shape=input_shape))
+                            model_1.add(Activation('relu'))
+                            model_1.add(Dense(1, activation="sigmoid"))
+                            model_1.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-                        lstm_in = int(bs)
+                            # Model 2: Regular LSTM
+                            # note...
+                            #
+                            #      batch_size         -> words per batch
+                            #      article_length     -> words per article
+                            #      embed_length       -> vector length per word
 
-                        model_2 = Sequential()
-                        model_2.add(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd, input_shape=input_shape))
-                        model_2.add(Activation('relu'))
-                        model_2.add(Dense(1, activation="sigmoid"))
-                        model_2.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+                            lstm_in = int(bs)
 
-                        # Train
+                            model_2 = Sequential()
+                            model_2.add(LSTM(lstm_in, return_sequences=False, dropout=d, recurrent_dropout=rd, input_shape=input_shape))
+                            model_2.add(Activation('relu'))
+                            model_2.add(Dense(1, activation="sigmoid"))
+                            model_2.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-                        message = "Fitting the models"
-                        send_text(message)
+                            # Train
 
-                        data = batch_gen(train_df, batch_size=bs, article_length=l)
-                        model_1.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
-                        model_2.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
+                            message = "Fitting the models"
+                            send_text(message)
 
-                        # Look at predictions
+                            data = batch_gen(train_df, batch_size=bs, article_length=l)
+                            model_1.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
+                            model_2.fit_generator(data, epochs=EPOCHS, steps_per_epoch=steps, validation_data=None, verbose=True)
 
-                        y_pred_1 = model_1.predict(x_test, batch_size=bs)
-                        y_pred_2 = model_2.predict(x_test, batch_size=bs)
+                            # Look at predictions
 
-                        threshold = 0.5
-                        res_1 = metrics.f1_score(y_test, y_pred_1, y_pred_1 > threshold)
-                        res_2 = metrics.f1_score(y_test, y_pred_2, y_pred_2 > threshold)
+                            y_pred_1 = model_1.predict(x_test, batch_size=bs)
+                            y_pred_2 = model_2.predict(x_test, batch_size=bs)
 
-                        # headers = ['Model', 'Article Length', 'Batch Size', 'Dropout', 'Recurant Dropout', 'Steps Per Epoch', 'F1']
-                        info_1 = ["Bidirectional", l, bs, d, rd, steps, res_1]
-                        info_2 = ["Regular", l, bs, d, rd, steps, res_2]
+                            threshold = 0.5
+                            res_1 = metrics.f1_score(y_test, y_pred_1, y_pred_1 > threshold)
+                            res_2 = metrics.f1_score(y_test, y_pred_2, y_pred_2 > threshold)
 
-                        write_row(info_1, file_out)
-                        write_row(info_2, file_out)
+                            # headers = ['Model', 'Article Length', 'Batch Size', 'Dropout', 'Recurant Dropout', 'Steps Per Epoch', 'F1']
+                            info_1 = ["Bidirectional", l, bs, d, rd, steps, res_1]
+                            info_2 = ["Regular", l, bs, d, rd, steps, res_2]
 
-                        message = "\nUPDATED: f1 scores of {one} and {two}".format(one=round(res_1,2), two=round(res_2,2))
-                        send_text(message)
-                        counter += 1
+                            write_row(info_1, file_out)
+                            write_row(info_2, file_out)
+
+                            message = "\nUPDATED: f1 scores of {one} and {two}".format(one=round(res_1,2), two=round(res_2,2))
+                            send_text(message)
+                            counter += 1
+    
+    except Exception as e: 
+        send_text('ERROR')
+        log(e, 'error_messages.txt')
+        
 
 ################################################################################
                  
@@ -208,6 +222,11 @@ def train(df, file_out):
 os.chdir(FOLDER_READ)
 df_all = pd.read_csv(FILE, sep='|').drop('Unnamed: 0', axis=1).drop('article', axis=1)
 df_all = df_all[df_all['source'] != "PBS"]
+
+# relabel the targets to 0 or 1
+args = ["Fox", "Vox"]
+targets = df_all['source'].apply(relabel, args=args)
+df_all['targets'] = targets
 
 ################################################################################
 # Process
