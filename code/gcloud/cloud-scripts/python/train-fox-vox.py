@@ -44,6 +44,7 @@ from twilio.rest import Client
 
 FOLDER_READ = '/home/smlee_981/data'
 FOLDER_WRITE = '/home/smlee_981/results'
+FOLDER_LOG = '/home/smlee_981/.log'
 FILE = 'clean_article_df.csv'
 EMBEDS = 'glove.840B.300d.txt'
 
@@ -99,8 +100,19 @@ def send_text(message):
     client.messages.create(to=TO_, from_=FROM_, body=message)
 
 def log(message, file_name): 
+    if not isinstance(message, str):
+        message = str(message)
+
+    # check if in correct folder for logging
+    cur_dir = os.getcwd()
+    if cur_dir != FOLDER_LOG: 
+        os.chdir(FOLDER_LOG)
+
     with open(file_name, 'a') as f: 
         f.write(message)
+    
+    # change back to where you were
+    os.chdir(cur_dir)
 
 ################################################################################
 # Define and Train Models
@@ -191,8 +203,8 @@ def train(df, file_out):
                             y_pred_2 = model_2.predict(x_test, batch_size=bs)
 
                             threshold = 0.5
-                            res_1 = metrics.f1_score(y_test, y_pred_1, y_pred_1 > threshold)
-                            res_2 = metrics.f1_score(y_test, y_pred_2, y_pred_2 > threshold)
+                            res_1 = metrics.f1_score(y_test, y_pred_1 > threshold)
+                            res_2 = metrics.f1_score(y_test, y_pred_2 > threshold)
 
                             # headers = ['Model', 'Article Length', 'Batch Size', 'Dropout', 'Recurant Dropout', 'Steps Per Epoch', 'F1']
                             info_1 = ["Bidirectional", l, bs, d, rd, steps, res_1]
