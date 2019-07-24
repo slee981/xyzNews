@@ -12,7 +12,7 @@
 #                   - PBS News 
 
 # Pre           : Cleaned csv file with articles 
-# Post          : A neural network and F1 results
+# Post          : Csv files with params and F1 results
  
 # Date          : 4.8.19
 #               : 7.22.19 (converetd to ,py file from notebook)
