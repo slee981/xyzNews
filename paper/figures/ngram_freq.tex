@@ -1,35 +1,45 @@
 \begin{table}[H]
     \centering
-    \begin{tabular}{|l|l|l|l|} \hline
-    \multicolumn{4}{|c|}{}                     \\ 
-    \multicolumn{4}{|c|}{Word Frequencies}     \\ \hline \hline
-        & Vox         & PBS       & Fox        \\ \hline 
-    1   & trump       & trump     & trump      \\
-    2   & tax         & said      & said       \\
-    3   & will        & president & president  \\
-    4   & people      & house     & house      \\
-    5   & health      & will      & new        \\
-    6   & bill        & new       & will       \\
-    7   & republicans & white     & democratic \\
-    8   & one         & senate    & democrats  \\
-    9   & new         & democrats & told       \\
-    10  & care        & campaign  & border     \\ \hline \hline
-    \multicolumn{4}{|c|}{}                                            \\
-    \multicolumn{4}{|c|}{2-gram Frequencies}                          \\ \hline
-        & Vox                  & PBS                & Fox             \\ \hline \hline
-    1   & health care          & white house        & white house     \\
-    2   & white house          & president donald   & new york        \\
-    3   & trump administration & donald trump       & president trump \\
-    4   & donald trump         & special counsel    & green new       \\
-    5   & tax cuts             & supreme court      & health care     \\
-    6   & health insurance     & attorney general   & new deal        \\
-    7   & new york             & new york           & united states   \\
-    8   & affordable care      & justice department & border security \\
-    9   & tax bill             & counsel robert     & donald trump    \\
-    10  & federal government   & trump said         & state union     \\ \hline \hline
-    \multicolumn{4}{|c|}{}                                                                                         \\ 
-    \multicolumn{4}{|c|}{3-gram Frequencies}                                                                       \\ \hline
-        & Vox                         & PBS                              & Fox                   \\ \hline \hline
+    \caption{Most frequent words and phrases, by news source.}
+    \label{tab:ngram}
+    \begin{tabular}{l||l|l|l} 
+        
+    \hline \hline
+    \multicolumn{4}{c}{}                                                                       \\ 
+    \multicolumn{4}{c}{\textbf{Most Common Words}}                                             \\ \hline 
+        &                             &                            &                             \\
+        & \textit{VOX}                & \textit{PBS}               & \textit{FOX}                \\ \hline 
+        &                             &                            &                             \\
+    1   & trump                       & trump                      & trump                       \\
+    2   & tax                         & said                       & said                        \\
+    3   & will                        & president                  & president                   \\
+    4   & people                      & house                      & house                       \\
+    5   & health                      & will                       & new                         \\
+    6   & bill                        & new                        & will                        \\
+    7   & republicans                 & white                      & democratic                  \\
+    8   & one                         & senate                     & democrats                   \\
+    9   & new                         & democrats                  & told                        \\
+    10  & care                        & campaign                   & border                      \\ \hline \hline % end of first table
+    \multicolumn{4}{c}{}                                                                       \\
+    \multicolumn{4}{c}{\textbf{Most Common 2-gram Phrases}}                                    \\ \hline
+        &                             &                            &                             \\
+        & \textit{VOX}                & \textit{PBS}               & \textit{FOX}                \\ \hline 
+        &                             &                            &                             \\
+    1   & health care                 & white house                & white house                 \\
+    2   & white house                 & president donald           & new york                    \\
+    3   & trump administration        & donald trump               & president trump             \\
+    4   & donald trump                & special counsel            & green new                   \\
+    5   & tax cuts                    & supreme court              & health care                 \\
+    6   & health insurance            & attorney general           & new deal                    \\
+    7   & new york                    & new york                   & united states               \\
+    8   & affordable care             & justice department         & border security             \\
+    9   & tax bill                    & counsel robert             & donald trump                \\
+    10  & federal government          & trump said                 & state union                 \\ \hline \hline % end of second table
+    \multicolumn{4}{c}{}                                                                       \\ 
+    \multicolumn{4}{c}{\textbf{Most Common 3-gram Phrases}}                                    \\ \hline
+        &                             &                            &                             \\
+        & \textit{VOX}                & \textit{PBS}               & \textit{FOX}                \\ \hline 
+        &                             &                            &                             \\
     1   & affordable care act         & president donald trump     & green new deal              \\ 
     2   & president donald trump      & special counsel robert     & house speaker nancy         \\ 
     3   & congressional budget office & majority leader mitch      & special counsel robert      \\
@@ -42,6 +52,4 @@
     10  & senate majority leader      & secretary sarah huckabee   & senate majority leader      \\ \hline
 
     \end{tabular}
-    \caption{Word Frequencies}
-    \label{tab:ngram}
 \end{table}

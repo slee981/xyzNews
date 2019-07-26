@@ -27,7 +27,7 @@ def get_embeddings():
                 coefs = np.asarray(values[1:], dtype="float32")
                 EMBEDDINGS_INDEX[word] = coefs
         except KeyboardInterrupt:
-            print("Stopping... ")
+            print("\n\nInterrupted. Closing the file and stopping... ")
 
 
 def prepare_article(text, article_length=500):

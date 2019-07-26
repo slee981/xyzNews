@@ -22,22 +22,32 @@
 		\subsection{Literature Review}
 	
 	\section{Data}
-	    I mined political news articles from the websites of Fox News, Vox News, and PBS News. Importantly, I restricted focus to only URLs that contained an explicit reference to politics i.e. from their respective political sections. This allowed me to collect articles that were as similar to each other as possible to try and limit the chances of spurious predictive results. Intuitively, the motivation behind this is to facilitate classifiacation based only on sentiment or semantics, rather than subject matter differences. A summary table of my data is shown in Table \ref{tab:summary}.  
+	    I mined political news articles from the websites of Fox News, Vox News, and PBS News. Importantly, I restricted focus to only URLs that contained an explicit reference to politics i.e. articles from their respective political sections. This allowed me to collect articles that were as similar  as possible to each other in order to try and limit the chances of spurious predictive results. Intuitively, the motivation behind this is to facilitate classification based only on sentiment or semantics, rather than subject matter differences. To better understand how similar the content of these articles are, we can construct n-gram tokens and count the frequency of their occurrences. In Table \ref{tab:ngram}, we see the most frequent one, two, and three-gram phrases.\footnote{The associated counts of each n-gram phrase are shown in Table [NEED REF] in the Appendix.}
+	    
+	    \input{figures/ngram_freq.tex} 
+	    
+	    Looking carefully at the most common words and phrases we see substantial similarity in terms of topic. Regardless of the source, ``Trump'' is the most used word. Perhaps surprisingly, the top four most used words for PBS and Fox news are exactly the same, and in the same order. Beyond that, we see phrases ``white house'', ``president Donald Trump'', and ``senate majority leader'' appear in the top ten most frequent phrases for each news source. Together, this suggests that, topic wise, the corpus for each source are comparable. 
+	    
+	    In addition to subject, wording, and phrasing, I also check for grammatical and structural differences with a simple lexical analysis. Using the University of Pennsylvania tagset, I count the percent of adjectives and adverbs in each article and calculate the average for each news source. I find very similar use of adjectives and adverbs for Fox and PBS, and a slightly more frequent use with Vox. Intuitively, the goal is to understand, on average, how descriptive the language is for each source. Toward this end, I included comparatives (e.g. better, worse, greater) and superlatives (e.g. best, worst, greatest) in the count. One may be interested to separate them out further to see if any news source provides more ``dramatic'' descriptions i.e. has a higher relative percent of superlatives. Unfortunately, given the size of my dataset, I was unable to find anything statistically meaningful. 
+	    
+	    Finally, I calculate the average number of words per article by source, and the average number of words per sentence, again grouped by news source. Here I find that PBS writes the shortest sentences, while Vox writes the longest. This measure is relevant when considering the average number of words per sentence as a proxy for complexity, as shown in [NEED SOURCE]. Table \ref{tab:summary} summarizes these descriptive statistics.  
  
     	\input{figures/summary_table.tex}
 	    
-	    This table shows that, from a high level view, the articles are semantically similar, on average. Specifically, I look at the average percent of adjectives and adverbs (including comparatives and superlatives) in a given document as a proxy for description. Further, I calculate the average number of words per sentence to proxy for complexity. 
-	    
-	    To better understand how similar the content of these articles are, we can construct n-gram tokens and count the frequency of their occurrences. In Table \ref{tab:ngram}, we see the most frequent one, two, and three-gram phrases. 
-	    
-	    \input{figures/ngram_freq.tex}
-	    
 	\subsection{Challenges}
-	    There are several limitations to discuss. The most obvious is the difference in corpus size from each source. In particular, Fox News has fewer documents than either PBS or Vox by quite a large number. Fortunately, however, there are many well established best practices for dealing with imbalanced data [SOURCES]. In this work, I bootstrap the data for balance. Second, due to the variability of online formatting, it's worth noting the possibility that, even after cleaning, each source exhibits some subtle idiosyncratic standards that could allow a neural network to detect those instead of pure sentiment and semantic differences. To mitigate this, I removed any mention of their own organization, or any other unique affiliations or locations.\footnote{For example, for every Fox News article, I removed any mention of `Fox'. Additionally, Fox News cited the `Associated Press' disproportionately often, so I also removed that string.} Finally, each news source shows a significant difference in the average length of each article. To overcome this, I limited the article input size to the first 500 words to ensure that no single source was consistently shorter. 
+	    There are several limitations to discuss. The most obvious is the difference in corpus size from each source. In particular, Fox News has fewer documents than either PBS or Vox by quite a large number. Fortunately, however, there are many well established best practices for dealing with imbalanced data [SOURCES]. In this work, I bootstrap the data for balance. Second, due to the variability of online formatting, it's worth noting the possibility that, even after cleaning, each source exhibits some subtle idiosyncratic standards that could allow a neural network to detect those instead of pure sentiment and semantic differences. To mitigate this, I removed any mention of their own organization, any other common and unique affiliations, and other identifying characters.\footnote{For example, I removed any mention of `Fox' from every Fox News article. Similarly, Fox News cited the ``Associated Press'' disproportionately often, so I also removed that string. Additionally, PBS News begins each article with location information in the following format: ``LOCATION --- Start of article...''. In this case, I removed the names of the most frequently referenced cities and the following ``---'' character.} Finally, each news source shows a significant difference in the average article length. To overcome this, I limited the article length to a maximum of the first 500 words to ensure that no single source was consistently shorter when fed into the neural network. 
 	    	
 	\section{Models}
+	I train and compare a recurrent, bidirectional, long-term short-term memory (LSTM) neural network against a baseline unidirectional LSTM model. The key advantage of the recurrent LSTM architecture is the ability for neural cell to ``remember'' relevant lagged values. Mathematically, each unit is described in Figure [NEED REFERENCE] below.  
 	
-	    
+	%%%%%%%%%%%%%%%%%%%%%%%
+	% insert figure of lstm archetiture
+	%%%%%%%%%%%%%%%%%%%%%%%
+	
+	I train unidirectionally (i.e. forward-only), where a given word only ``knows'' of words that precede it through the LSTM architecture, and bidirectionally (i.e. forwards and backwards), where a given word can ``know'' about what came before it \textit{and} what follows. Intuitively, we can think about this through the following example. Consider the sentence, ``The man sat to eat an orange, which, oddly, matched the color of his beard with surprising accuracy.'' When we as humans read that sentence, we can retroactively modify our understanding: this is to say that we can update our image of the man even after reading about him. In this example, it's possible to first imagine a cleanly shaved man with short brown hair, and \textit{later} update your mental image to a man with long orange hair and a shaggy beard. Similarly, training the neural network both forward and backward allows for additional context. 
+	
+	\subsection{Embeddings}
+	To encode the 
 	
 	\section{Results}
 	
