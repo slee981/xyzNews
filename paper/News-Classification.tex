@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{lscape}
+\usepackage{natbib}
 
 \author{Stephen M. Lee}
 \title{A NLP Approach to Understanding Variation in Political News}
@@ -18,41 +19,77 @@
 	\newpage
 	
 	\section{Introduction}
-		The 2016 United States Presidential Election, to many, raised questions as to the reliability of their news sources [SOURCE NEEDED]. Since then, many social media companies and other institutions have begun public campaigns to combat the perceived threat from fake news, with arguably limited results [SOURCE NEEDED]. With a goal of news source classification, I scraped several thousand news articles from Fox, Vox, and PBS News. By some estimations [SOURCE NEEDED], these three represent distinct categories of news: Fox is often considered extreme “right” opinion (i.e. conservative); Vox is considered extreme “left” opinion (i.e. liberal); and PBS is considered “center” primary source news. I first calculate the top word, 2-gram, and 3-gram frequencies to better understand the dataset, and then train a Bidirectional LSTM neural network with pretrained embeddings to classify the news source. 
-		\subsection{Literature Review}
-	
+		The 2016 United States Presidential Election, to many, raised questions as to the reliability of their news sources. For example, \citet{allcott2017social} estimate that the average US adult read and remembered about one, and possibly up to several, fake news articles during the election period. While they make no statements about the effects of this exposure, the implications are certainly thought provoking. 
+		
+		Since then, many social media companies and other institutions have begun public campaigns to combat the perceived threat from fake news, including explicit efforts from Google and Facebook to remove ``fake news sites'', as documented in \citet{allcott2017social}. 
+		
+		With a goal of classifying articles by their news source, I scraped several thousand news articles from Fox, Vox, and PBS News. By some estimations,\footnote{The website https://www.adfontesmedia.com/ provides a visual representation of media bias. Their methodology is well documented, and the outcome is largely consistent with other sources and anecdotal descriptions of bias.} these three news sites represent distinct categories of news: Fox as a conservative “right” opinion; Vox as a liberal “left” opinion; and PBS as the “center” primary source news position. Figure \ref{fig:news-bias} shows a graphic representation of this news bias. 
+		
+		I first calculate the top words, 2-gram, and 3-gram frequencies to better understand the dataset, and then train a bidirectional, long-term short-term memory (LSTM) recurrent neural network using the GloVe pretrained word embeddings to predict the source of news. 
+		
+		This work fits into existing literature by bridging gaps between the cutting edge of computer science and economics. On the computer science front, bidirectional LSTM recurrent neural networks provide some of the most accurate results for predicting sequential data, whereas the economic work on media bias focuses more on inference based analyses. In particular, \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news---meaning they want to have their prior beliefs validated---and that the profit maximizing response from news companies can account for around 20\% of the variation in political slant or bias. In this same direction, \citet{gentzkow2006media} also find that a theoretical Bayesian consumer will effectively reinforce their beliefs of a given news source quality when they read something that confirms their priors. Together, these works suggest that political news bias may be a tactical response of competing news firms to segment the consumer market according to their heterogeneous beliefs, and, further, that this polarization may be self-reinforcing. In fact, \citet{gentzkow2008competition} go as far as to suggest that competition in information markets may actually be counterproductive in achieving balanced and unbiased news. These effects could explain the relative neutrality of news sources like the BBC that are somewhat insulated from the competitive pressures faced by Fox and Vox news companies. 
+		
+		If these news companies are in fact biased by construction, can we train a computer to detect and classify the differences based on the language alone? Regardless of the answer, there are substantial implications. If yes, then we can create computer software to help classify news based on language content. This would enable news consumers to effectively ``locate'' their news consumption in the same way that a GPS helps to locate yourself on a map, or a calorie tracking app helps to locate your dietary health. However, if the answer is no, then it provides a clear direction for further study in the field of natural language processing and machine learning insofar as additional context is needed to parse the perceived differences. 
+		
+		In this case, I find that a relatively simple, bidirectional, LSTM recurrent neural network can in fact correctly predict the source of an article with very high accuracy. I then use the result of this trained network to build a web app that can allow for a copy-and-paste interface to this classification model. Depending on the extent to which the underlying model enables transfer learning, this web app could ideally serve as a first check on the inherent bias in political news before you read. 
+		
+		\begin{figure}[H]
+			\includegraphics[width=\textwidth]{figures/images/news-bias.jpg}
+			\caption{A graphical depiction of the bias in various political news sources.}
+			\label{fig:news-bias}
+		\end{figure}
+		
 	\section{Data}
-	    I mined political news articles from the websites of Fox News, Vox News, and PBS News. Importantly, I restricted focus to only URLs that contained an explicit reference to politics i.e. articles from their respective political sections. This allowed me to collect articles that were as similar  as possible to each other in order to try and limit the chances of spurious predictive results. Intuitively, the motivation behind this is to facilitate classification based only on sentiment or semantics, rather than subject matter differences. To better understand how similar the content of these articles are, we can construct n-gram tokens and count the frequency of their occurrences. In Table \ref{tab:ngram}, we see the most frequent one, two, and three-gram phrases.\footnote{The associated counts of each n-gram phrase are shown in Table [NEED REF] in the Appendix.}
+	    I mined political news articles from the websites of Fox News, Vox News, and PBS News. Importantly, I restricted focus to only URLs that contained an explicit reference to politics i.e. articles from their respective political sections. This allowed me to collect articles that were as similar  as possible to each other in order to try and limit the chances of spurious predictive results. Intuitively, the motivation behind this is to facilitate classification based only on sentiment or semantics, rather than subject matter differences. To better understand how similar the content of these articles are, I construct n-gram tokens and count the frequency of their occurrences. In Table \ref{tab:ngram}, we see the most frequent one, two, and three-gram phrases from the collected corpus.\footnote{The associated counts of each n-gram phrase are shown in Table [NEED REF] in the Appendix.}
 	    
 	    \input{figures/ngram_freq.tex} 
 	    
 	    Looking carefully at the most common words and phrases we see substantial similarity in terms of topic. Regardless of the source, ``Trump'' is the most used word. Perhaps surprisingly, the top four most used words for PBS and Fox news are exactly the same, and in the same order. Beyond that, we see phrases ``white house'', ``president Donald Trump'', and ``senate majority leader'' appear in the top ten most frequent phrases for each news source. Together, this suggests that, topic wise, the corpus for each source are comparable. 
 	    
-	    In addition to subject, wording, and phrasing, I also check for grammatical and structural differences with a simple lexical analysis. Using the University of Pennsylvania tagset, I count the percent of adjectives and adverbs in each article and calculate the average for each news source. I find very similar use of adjectives and adverbs for Fox and PBS, and a slightly more frequent use with Vox. Intuitively, the goal is to understand, on average, how descriptive the language is for each source. Toward this end, I included comparatives (e.g. better, worse, greater) and superlatives (e.g. best, worst, greatest) in the count. One may be interested to separate them out further to see if any news source provides more ``dramatic'' descriptions i.e. has a higher relative percent of superlatives. Unfortunately, given the size of my dataset, I was unable to find anything statistically meaningful. 
+	    In addition to subject, wording, and phrasing, I also check for grammatical and structural differences with a simple lexical analysis. Using the University of Pennsylvania tagset, I count the percent of adjectives and adverbs in each article and calculate the average for each news source. I find very similar use of adjectives and adverbs for Fox and PBS, and a slightly more frequent use with Vox. Intuitively, the goal is to understand, on average, how descriptive the language is for each source. Toward this end, I included comparatives (e.g. better, worse, greater) and superlatives (e.g. best, worst, greatest) in the count.
 	    
-	    Finally, I calculate the average number of words per article by source, and the average number of words per sentence, again grouped by news source. Here I find that PBS writes the shortest sentences, while Vox writes the longest. This measure is relevant when considering the average number of words per sentence as a proxy for complexity, as shown in [NEED SOURCE]. Table \ref{tab:summary} summarizes these descriptive statistics.  
+	    Finally, I calculate the average number of words per article by source, and the average number of words per sentence, again grouped by news source. Here I find that PBS writes the shortest sentences, while Vox writes the longest. This measure is relevant when considering the average number of words per sentence as a proxy for complexity, as introduced in \citet{flesch1948new}. Table \ref{tab:summary} summarizes these descriptive statistics.  
  
     	\input{figures/summary_table.tex}
 	    
-	\subsection{Challenges}
-	    There are several limitations to discuss. The most obvious is the difference in corpus size from each source. In particular, Fox News has fewer documents than either PBS or Vox by quite a large number. Fortunately, however, there are many well established best practices for dealing with imbalanced data [SOURCES]. In this work, I bootstrap the data for balance. Second, due to the variability of online formatting, it's worth noting the possibility that, even after cleaning, each source exhibits some subtle idiosyncratic standards that could allow a neural network to detect those instead of pure sentiment and semantic differences. To mitigate this, I removed any mention of their own organization, any other common and unique affiliations, and other identifying characters.\footnote{For example, I removed any mention of `Fox' from every Fox News article. Similarly, Fox News cited the ``Associated Press'' disproportionately often, so I also removed that string. Additionally, PBS News begins each article with location information in the following format: ``LOCATION --- Start of article...''. In this case, I removed the names of the most frequently referenced cities and the following ``---'' character.} Finally, each news source shows a significant difference in the average article length. To overcome this, I limited the article length to a maximum of the first 500 words to ensure that no single source was consistently shorter when fed into the neural network. 
+	\subsection{Challenges} \label{Challenges}
+	    There are several limitations to discuss. The most obvious is the difference in corpus size from each source. In particular, Fox News has fewer documents than either PBS or Vox by quite a large number. Fortunately, there are many well established methods for dealing with imbalanced data, like bootstraping, as in \citet{dupret2001bootstrap}. 
+	    
+	    Second, due to the variability of online formatting, it's worth noting the possibility that, even after cleaning, each source exhibits some subtle idiosyncratic characteristics that could allow a neural network to detect those instead of pure sentiment and semantic differences. To mitigate this, I removed any mention of their own organization, any other common and unique affiliations, and other identifying characteristics.\footnote{For example, I removed any mention of `Fox' from every Fox News article. Similarly, Fox News cited the ``Associated Press'' disproportionately often, so I also removed that string. Additionally, PBS News begins each article with location information in the following format: ``LOCATION --- Start of article...''. In this case, I removed the names of the most frequently referenced cities and the following ``---'' character.} 
+	    
+	    Finally, each news source shows a difference in the average article length. To overcome this, I limited the article length to a maximum of the first 500 words to ensure that no single source was consistently shorter when fed into the neural network. 
 	    	
 	\section{Models}
-	I train and compare a recurrent, bidirectional, long-term short-term memory (LSTM) neural network against a baseline unidirectional LSTM model. The key advantage of the recurrent LSTM architecture is the ability for neural cell to ``remember'' relevant lagged values. Mathematically, each unit is described in Figure [NEED REFERENCE] below.  
+	As a baseline, I use long-term short-term memory (LSTM) neural network. The LSTM architecture was introduced in \citet{hochreiter1997long}, and extended the Recurrant Neural Network (RNN) to improve lagged information storage for the purpose of predicting sequential data. The key advantage of the recurrent LSTM architecture is the ability for the cell to ``remember'' relevant lagged values, while ``forgetting'' less useful ones. Visually, we can see a representation of a single LSTM unit in Figure \ref{fig:lstm}.\footnote{Source: https://colah.github.io/posts/2015-08-Understanding-LSTMs}
 	
-	%%%%%%%%%%%%%%%%%%%%%%%
-	% insert figure of lstm archetiture
-	%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{figure}[H]
+		\includegraphics[width=\textwidth]{figures/images/lstm-math.png}
+		\caption{A graphical depiction of a single LSTM cell.}
+		\label{fig:lstm}
+	\end{figure}
+
+	More recently, \citet{gers2000recurrent}, \citet{chung2014empirical}, and \citet{yao2015depth} introduce variations on the baseline \citet{hochreiter1997long} LSTM model, although \citet{greff2016lstm} show them to be roughly equivalent. 
 	
-	I train unidirectionally (i.e. forward-only), where a given word only ``knows'' of words that precede it through the LSTM architecture, and bidirectionally (i.e. forwards and backwards), where a given word can ``know'' about what came before it \textit{and} what follows. Intuitively, we can think about this through the following example. Consider the sentence, ``The man sat to eat an orange, which, oddly, matched the color of his beard with surprising accuracy.'' When we as humans read that sentence, we can retroactively modify our understanding: this is to say that we can update our image of the man even after reading about him. In this example, it's possible to first imagine a cleanly shaved man with short brown hair, and \textit{later} update your mental image to a man with long orange hair and a shaggy beard. Similarly, training the neural network both forward and backward allows for additional context. 
+	Much success in natural language processing (and other sequential tasks) has been attributed to so-called bidirectional LSTM networks. As in \citet{wang2015unified}, I train an LSTM architecture bidirectionally (i.e. forwards and backwards), and compare it to a unidirectional (i.e. forward-only) baseline. Intuitively, we can think of bidirectional feeds as providing additional context for a given word to ``know'' about what came before it \textit{and} what comes after it. Visually, Figure \ref{fig:bidirectional} depicts a bidirectional network during training. 
+	 
+	 \begin{figure}[H]
+	 	\includegraphics[width=\textwidth]{figures/images/bidirectional-net.png}
+	 	\caption{A visual representation of a bidirectional LSTM training.}
+	 	\label{fig:bidirectional}
+	 \end{figure}
 	
-	\subsection{Embeddings}
-	To encode the 
+	In order to help understand the advantages of training bidirectionally, consider the following sentence. ``The man sat to eat an orange, which, strangely, matched the color of his beard with tremendous accuracy.'' When we as humans read that sentence, we can retroactively modify our understanding. In other words, we can update our image of the man even after he was first mentioned. In this example, when reading the word man, it's possible to first imagine a cleanly shaved man with short dark hair based on the little previous context. However, only \textit{after} finishing the sentence, we can update our mental image to a man with long orange hair and a trimmed beard. Similarly, training the neural network both forward and backward can allow for additional context. 
 	
+	\subsection{Word Embedding}
+	Using the common crawl 840B Global Word Vector (i.e. GloVe), I mapped each word into its corresponding $300 \times 1$ dimensional vector.\footnote{This embedding is introduced in \citet{pennington2014glove} and uses 840 billion tokens and a case-sensitive vocabulary of 2.2 million words to map words into a corresponding $300 \times 1$ dimensional vector.} Since this set of embeddings are case sensitive and unstemmed, I do minimal preprocessing to the text besides the basic cleaning mentioned in Section \ref{Challenges}.
+		
 	\section{Results}
 	
 	\section{Implementation}
 	
 	\section{Conclusion and Discussion}
+	
+	\bibliographystyle{plainnat}
+	\bibliography{references/ref}
 	
 \end{document}

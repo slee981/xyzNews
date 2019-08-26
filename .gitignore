@@ -21,8 +21,11 @@ paper/docs/~$utline.docx
 *.aux
 *.bbl
 *.blg
+*.fls
+*.fdb_latexmk
 *.synctex.gz 
 *.DS_Store
 
 .ipynb_checkpoints
 *.tar.gz
+.vscode/
