@@ -85,9 +85,47 @@
 		
 	\section{Results}
 	
+	Using bootstrapped data and setup from above, I trained and tested the model with various parameterizations. Notably, for an RNN, we can specify the batch size, dropout rate, recurrent dropout rate, and the number of steps per epoch. Broadly speaking, batch size describes the number of words included in each training group, the dropout rate specifies the probability of ignoring any given entry in the matrix of weights---this helps to prevent the model from overfitting on any specific word or word sequence when making predictions. The recurrent dropout, similarly, specifies the dropout that occurs between training groups, and the steps per epoch set the number of iterations used in training. 
+	
+	We can see that the results favor a larger batch size, and a larger number of iterations. Perhaps surprisingly, we don't see too much gain from increasing the maximum article length from 250 words to 500 words. This suggests that any linguistic or semantic differences are, in general, noticeable from the start. 
+	
+	The reported F1 scores are measured across the entire sample by counting the total number of accurate predictions, false positives, and false negatives. Mathematically, the F1 score is the harmonic mean of precision and recall, defined as follows:\footnote{For source, see https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1\_score.html.} 
+	
+	\begin{equation*}
+		F_1 =  2 \,\, \frac{Precision \cdot Recall}{Precision + Recall}
+	\end{equation*}
+	
+	Where, 
+	\begin{align*}
+		Precision &= \frac{True Positives}{True Positives + False Positives}\\ \\
+		Recall &= \frac{True Positives}{True Positives + False Negatives}
+	\end{align*}
+	
+	Results are summarized in Table \ref{tab:bires}.
+	
+	\input{figures/training_results.tex}
+	
+	As an additional exercise for robustness and comparison, I used similar parameters to train an LSTM recurrent neural network unidirectionally, rather than bidirectionally. Interestingly, we see that the best performing unidirectional model still under performed the worst bidirectional model. Results are shown in the Appendix in Figure \ref{tab:unires}.
+	
 	\section{Implementation}
 	
+	To make use of this trained model in application, I wrote a simple web interface that enables passing text from an arbitrary news article through a form, and returning values that can be interpreted as predictions of the likelihood that the article is from Fox, Vox, or PBS News. The commercial use case for this type of app is to provide context as to the type of writing before or after the consumer has read the article. Ideally, each user could login and see a history of the news they consume---this could help interested readers identify if and when they are in a so-called political echo-chamber. Ultimately, it could help balance information consumption. 
+	
+	Extensions of this work would include more volume and more recent news articles as to stay up to date with changing topics and voice. Additional news sources would also be desirable for readers to chose their set of comparisons such that they are comfortable in assessing the relative balance and neutrality of the set as a whole. 
+	
+	A sample of the interface is shown in Figures [REF] and [REF] below. 	
+		
 	\section{Conclusion and Discussion}
+	
+	\section{Appendix}
+	
+	\input{figures/word_frequencies.tex}
+	
+	\input{figures/2gram_frequencies.tex}
+	
+	% \input{figures/3gram_frequencies.tex}
+	
+	\input{figures/regular_training_results.tex}
 	
 	\bibliographystyle{plainnat}
 	\bibliography{references/ref}
