@@ -47,7 +47,7 @@
 		\end{figure}
 		
 	\section{Data}
-	    I mined political news articles from the websites of Fox News, Vox News, and PBS News. Importantly, I restricted focus to only URLs that contained an explicit reference to politics i.e. articles from their respective political sections. This allowed me to collect articles that were as similar  as possible to each other in order to try and limit the chances of spurious predictive results. Intuitively, the motivation behind this is to facilitate classification based only on sentiment or semantics, rather than subject matter differences. To better understand how similar the content of these articles are, I construct n-gram tokens and count the frequency of their occurrences. In Table \ref{tab:ngram}, we see the most frequent one, two, and three-gram phrases from the collected corpus.\footnote{The associated counts of each n-gram phrase are shown in Table [NEED REF] in the Appendix.}
+	    I mined political news articles from the websites of Fox News, Vox News, and PBS News. Importantly, I restricted focus to only URLs that contained an explicit reference to politics i.e. articles from their respective political sections. This allowed me to collect articles that were as similar  as possible to each other in order to try and limit the chances of spurious predictive results. Intuitively, the motivation behind this is to facilitate classification based only on sentiment or semantics, rather than subject matter differences. To better understand how similar the content of these articles are, I construct n-gram tokens and count the frequency of their occurrences. In Table \ref{tab:ngram}, we see the most frequent one, two, and three-gram phrases from the collected corpus.\footnote{The associated counts of each n-gram phrase are shown in Tables \ref{tab:1gram}, \ref{tab:2gram}, and \ref{tab:3gram}, in the Appendix.}
 	    
 	    \input{figures/ngram_freq.tex} 
 	    
@@ -110,7 +110,7 @@
 		Recall &= \frac{True Positives}{True Positives + False Negatives}
 	\end{align*}
 	
-	As an additional exercise for robustness and comparison, I used similar parameters to train an LSTM recurrent neural network unidirectionally, rather than bidirectionally. Interestingly, we see that the best performing unidirectional model still under performed the worst bidirectional model, although on the whole, the unidirectional model dramatically under-performed relative to the bidrectional baseline. Results are shown in the Appendix in Figure \ref{tab:unires}.
+	As an additional exercise for robustness and comparison, I used similar parameters to train an LSTM recurrent neural network unidirectionally, rather than bidirectionally. Interestingly, we see that the best performing unidirectional model still under performed even the worst performing bidirectional model. Results from this exercise are shown in the Appendix in Figure \ref{tab:unires}.
 	
 	\section{Implementation}
 	
@@ -134,7 +134,7 @@
 	\end{figure}
 		
 	\section{Conclusion and Discussion}
-	I've shown that a neural network can accurately classify news articles based on common language differences in the underlying news sources. These results have implications for our politically polarized world, where even scientific ``facts'' are often disputed. While there are plenty of factors that could motivate news companies to intentionally bias their news,  \citet{gentzkow2008competition} and \citet{gentzkow2006media} suggest that the profit maximizing response of a company is to produce a news product that confirms consumers prior beliefs. Thus, given a society of individuals with heterogeneous preferences and beliefs, and a competitive news information market, it seems unlikely that biased news (or even fake news) will disappear anytime soon. 
+	I've shown that a neural network can accurately classify news articles based on language differences in the underlying news sources. These results have implications for our politically polarized world, where even scientific ``facts'' are now often disputed. While there are plenty of factors that could motivate news companies to intentionally bias their news,  \citet{gentzkow2008competition} and \citet{gentzkow2006media} suggest that the profit maximizing response of a company is to produce a news product that confirms consumers prior beliefs. Thus, given a society of individuals with heterogeneous preferences and beliefs, and a competitive news information market, it seems unlikely that biased news (or even fake news) will disappear anytime soon. 
 	
 	A software application based on the ideas presented above could serve as a starting point to measure news consumption---much in the same way that calendars can help to measure our time use, nutrition apps measure our consumption of macronutrients, and GPS measures our geographical position. 
 	
