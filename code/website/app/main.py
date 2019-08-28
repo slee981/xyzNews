@@ -75,10 +75,10 @@ def home():
             prediction = {"pbs": preds[0], "vox": preds[1], "fox": preds[2]}
             success=True
 
-            return flask.render_template("index.html", form=form, success=success, prediction=prediction, values=values)
+            return flask.render_template("index.html",\
+                                         form=form, success=success, prediction=prediction, values=values)
 
-    # return the data dictionary as a JSON response
-    # return flask.jsonify(data)
+    # return the home page
     return flask.render_template("index.html", form=form)
 
 
