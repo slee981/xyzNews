@@ -9,6 +9,8 @@ import os
 from inputForm import InputForm
 
 app = flask.Flask(__name__)
+app.static_folder = os.path.join(os.getcwd(), 'static')
+app.static_url_path = os.path.join(os.getcwd(), 'static')
 
 MODEL_PATH = "./models/xyzNews-classifier.h5"
 EMBEDDING_PATH = "word_embedding/glove.840B.300d.txt"
@@ -68,10 +70,12 @@ def home():
             # 0 - PBS
             # 1 - Vox
             # 2 - Fox
-            pred = pred[0].tolist()
-            prediction = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
+            preds = pred[0].tolist()
+            values = [round(i, 3) for i in preds]
+            prediction = {"pbs": preds[0], "vox": preds[1], "fox": preds[2]}
+            success=True
 
-            return flask.render_template("index.html", form=form, prediction=prediction)
+            return flask.render_template("index.html", form=form, success=success, prediction=prediction, values=values)
 
     # return the data dictionary as a JSON response
     # return flask.jsonify(data)
@@ -97,8 +101,9 @@ def predict():
             # 0 - PBS
             # 1 - Vox
             # 2 - Fox
-            pred = pred[0].tolist()
-            prediction = {"pbs": pred[0], "vox": pred[1], "fox": pred[2]}
+            values = pred[0].tolist()
+            labels = ['PBS News', 'Vox News', 'Fox News']
+            prediction = {"pbs": values[0], "vox": values[1], "fox": values[2]}
             data["prediction"] = prediction
             data["success"] = True
 

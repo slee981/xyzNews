@@ -3,17 +3,37 @@
 
 <head>
     <title>xyzNews</title>
-    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-theme.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/index.css') }}">
+    <script src="{{ url_for('static', filename='js/chart.js/dist/Chart.min.js') }}"></script>
+    <style>
+        #main-title {
+            color: rgb(70, 70, 70);
+            margin-top: 50px; 
+        }
+        #slogan {
+            color: rgb(48, 0, 0); 
+            margin-bottom: 30px; 
+        }
+        #results {
+            margin-top:75px
+        }
+        #chart-container {
+            width: 100%;
+            margin: 50px auto 100px auto;
+        }
+        #canvas-chart {
+            margin: auto auto; 
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="container"><br>
         <center>
-            <h1>xyzNews</h1>
-            <p>Find Yourself</p>
+            <h1 id="main-title">xyzNews</h1>
+            <p id="slogan"><i>Locate Yourself</i></p>
         </center>
     </div>
 
@@ -27,29 +47,53 @@
                 </div>
 
                 <center>
-                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="submit" class="btn btn-secondary">Submit</button>
                 </center>
             </form>
         </center>
     </div>
 
-    {% if prediction:  %}
-    <div class="container" id="results">
-        <center>
-            <h1>Results</h1>
-        </center>
-    </div>
+    {% if success:  %}
+        <div class="container">
+            <center>
+                <h2 id="results">Prediction Results</h2>
+            </center>
+        </div>
 
-    <div class="container">
-        <center>
-            {% for source in prediction.keys(): %}
-            <p>
-                {{ source }}: {{ prediction.get(source) }}
-            </p>
-            {% endfor %}
-        </center>
-    </div>
+        <div id="chart-container">
+            <canvas id="canvas-chart"></canvas>
+        </div>
     {% endif %}
+
+    <script>
+        var chartColors = {
+            red: 'rgb(255, 99, 132)',
+            yellow: 'rgb(255, 205, 86)',
+            blue: 'rgb(54, 162, 235)',
+        };
+        var ctx = document.getElementById('canvas-chart').getContext('2d');
+        var config = {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: {{ values }}, 
+                    backgroundColor: [
+						chartColors.yellow,
+                        chartColors.blue,
+						chartColors.red
+                    ]
+                }],
+                labels: ['PBS', 'Vox', 'Fox']
+            }, 
+            options: {
+				responsive: false,
+				legend: {
+					position: 'left',
+				}
+			}
+        };
+        var chart = new Chart(ctx, config);
+    </script>
 </body>
 
 </html>

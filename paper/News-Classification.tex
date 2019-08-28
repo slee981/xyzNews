@@ -3,7 +3,7 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage{lscape}
+\usepackage{pdflscape}
 \usepackage{natbib}
 
 \author{Stephen M. Lee}
@@ -17,6 +17,13 @@
 	\tableofcontents
 	
 	\newpage
+	
+	\begin{center}
+		\textit{``If you can't measure it, you can't improve it.''}
+	\end{center}
+    \begin{flushright}
+    	--- Peter Drucker
+    \end{flushright}
 	
 	\section{Introduction}
 		The 2016 United States Presidential Election, to many, raised questions as to the reliability of their news sources. For example, \citet{allcott2017social} estimate that the average US adult read and remembered about one, and possibly up to several, fake news articles during the election period. While they make no statements about the effects of this exposure, the implications are certainly thought provoking. 
@@ -85,9 +92,11 @@
 		
 	\section{Results}
 	
-	Using bootstrapped data and setup from above, I trained and tested the model with various parameterizations. Notably, for an RNN, we can specify the batch size, dropout rate, recurrent dropout rate, and the number of steps per epoch. Broadly speaking, batch size describes the number of words included in each training group, the dropout rate specifies the probability of ignoring any given entry in the matrix of weights---this helps to prevent the model from overfitting on any specific word or word sequence when making predictions. The recurrent dropout, similarly, specifies the dropout that occurs between training groups, and the steps per epoch set the number of iterations used in training. 
+	Using bootstrapped data and the setup above, I train and test models with various parameterizations. Notably, for an RNN, we can specify the batch size, dropout rate, recurrent dropout rate, and the number of steps per epoch. Broadly speaking, batch size describes the number of words included in each training group, the dropout rate specifies the probability of ignoring any given entry in the matrix of weights---this helps to prevent the model from overfitting on any specific word when making predictions. The recurrent dropout, similarly, specifies the dropout that occurs between recurrent cells. Finally, using only one epoch, the steps per epoch represents the number of iterations used in training. 
 	
-	We can see that the results favor a larger batch size, and a larger number of iterations. Perhaps surprisingly, we don't see too much gain from increasing the maximum article length from 250 words to 500 words. This suggests that any linguistic or semantic differences are, in general, noticeable from the start. 
+	Results are summarized in Table \ref{tab:bires}. We can see that the results favor a larger batch size, and a larger number of iterations. Perhaps surprisingly, we don't see too much gain from increasing the maximum article length from 250 words to 500 words. This suggests that any linguistic or semantic differences are, in general, noticeable from the start. 
+	
+	\input{figures/training_results.tex}
 	
 	The reported F1 scores are measured across the entire sample by counting the total number of accurate predictions, false positives, and false negatives. Mathematically, the F1 score is the harmonic mean of precision and recall, defined as follows:\footnote{For source, see https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1\_score.html.} 
 	
@@ -101,31 +110,49 @@
 		Recall &= \frac{True Positives}{True Positives + False Negatives}
 	\end{align*}
 	
-	Results are summarized in Table \ref{tab:bires}.
-	
-	\input{figures/training_results.tex}
-	
-	As an additional exercise for robustness and comparison, I used similar parameters to train an LSTM recurrent neural network unidirectionally, rather than bidirectionally. Interestingly, we see that the best performing unidirectional model still under performed the worst bidirectional model. Results are shown in the Appendix in Figure \ref{tab:unires}.
+	As an additional exercise for robustness and comparison, I used similar parameters to train an LSTM recurrent neural network unidirectionally, rather than bidirectionally. Interestingly, we see that the best performing unidirectional model still under performed the worst bidirectional model, although on the whole, the unidirectional model dramatically under-performed relative to the bidrectional baseline. Results are shown in the Appendix in Figure \ref{tab:unires}.
 	
 	\section{Implementation}
 	
-	To make use of this trained model in application, I wrote a simple web interface that enables passing text from an arbitrary news article through a form, and returning values that can be interpreted as predictions of the likelihood that the article is from Fox, Vox, or PBS News. The commercial use case for this type of app is to provide context as to the type of writing before or after the consumer has read the article. Ideally, each user could login and see a history of the news they consume---this could help interested readers identify if and when they are in a so-called political echo-chamber. Ultimately, it could help balance information consumption. 
+	To make use of this trained model in application, I wrote a simple web interface that enables passing text from an arbitrary news article through a form, and returns values that can be interpreted as predictions of the likelihood that a given article is from Fox, Vox, or PBS News. The commercial use case for this type of app is to provide context as to the type of writing, either before or after the consumer has read the article. Ideally, each user could login and see a history of the news they consume---this could help interested readers identify if and when they are in a political bubble or echo-chamber. Idealistically, it could help balance information consumption. 
 	
-	Extensions of this work would include more volume and more recent news articles as to stay up to date with changing topics and voice. Additional news sources would also be desirable for readers to chose their set of comparisons such that they are comfortable in assessing the relative balance and neutrality of the set as a whole. 
+	Extensions of this work would include more volume and more recent news articles as to stay current with changing topics and trends. Additional news sources would also be desirable for readers to chose their set of comparisons such that they are comfortable in assessing the relative balance and neutrality of the set as a whole. 
 	
-	A sample of the interface is shown in Figures [REF] and [REF] below. 	
+	A sample of the interface is shown in Figures \ref{fig:form} and \ref{fig:results} below. 	
+	
+	\begin{figure}[H]
+		\includegraphics[width=\textwidth]{figures/images/web-form.png}
+		\caption{The home landing page for the web app.}
+		\label{fig:form}
+	\end{figure}
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.75\textwidth]{figures/images/web-results.png}
+		\caption{The web display of the prediction results.}
+		\label{fig:results}
+	\end{figure}
 		
 	\section{Conclusion and Discussion}
+	I've shown that a neural network can accurately classify news articles based on common language differences in the underlying news sources. These results have implications for our politically polarized world, where even scientific ``facts'' are often disputed. While there are plenty of factors that could motivate news companies to intentionally bias their news,  \citet{gentzkow2008competition} and \citet{gentzkow2006media} suggest that the profit maximizing response of a company is to produce a news product that confirms consumers prior beliefs. Thus, given a society of individuals with heterogeneous preferences and beliefs, and a competitive news information market, it seems unlikely that biased news (or even fake news) will disappear anytime soon. 
+	
+	A software application based on the ideas presented above could serve as a starting point to measure news consumption---much in the same way that calendars can help to measure our time use, nutrition apps measure our consumption of macronutrients, and GPS measures our geographical position. 
+	
+	\newpage
 	
 	\section{Appendix}
 	
-	\input{figures/word_frequencies.tex}
-	
-	\input{figures/2gram_frequencies.tex}
-	
-	% \input{figures/3gram_frequencies.tex}
-	
-	\input{figures/regular_training_results.tex}
+	\begin{center}
+		\input{figures/word_frequencies.tex}
+		
+		\input{figures/2gram_frequencies.tex}
+		
+	    \input{figures/3gram_frequencies.tex}
+		
+		\input{figures/regular_training_results.tex}
+	\end{center}
+
+	\newpage
 	
 	\bibliographystyle{plainnat}
 	\bibliography{references/ref}
