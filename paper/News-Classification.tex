@@ -92,7 +92,7 @@
 		
 	\section{Results}
 	
-	Using bootstrapped data and the setup above, I train and test models with various parameterizations. Notably, for an RNN, we can specify the batch size, dropout rate, recurrent dropout rate, and the number of steps per epoch. Broadly speaking, batch size describes the number of words included in each training group, the dropout rate specifies the probability of ignoring any given entry in the matrix of weights---this helps to prevent the model from overfitting on any specific word when making predictions. The recurrent dropout, similarly, specifies the dropout that occurs between recurrent cells. Finally, using only one epoch, the steps per epoch represents the number of iterations used in training. 
+	Using bootstrapped data and the setup above, I train and test models with various parameterizations by performing a 90/10 partition of the original dataset into both a training set and testing set for calculating F1 scores. For an RNN, we can specify the batch size, dropout rate, recurrent dropout rate, and the number of steps per epoch. Broadly speaking, batch size describes the number of words included in each training group, the dropout rate specifies the probability of ignoring any given entry in the matrix of weights---this helps to prevent the model from overfitting on any specific word when making predictions. The recurrent dropout, similarly, specifies the dropout that occurs between recurrent cells. Finally, using only one epoch, the steps per epoch represents the number of iterations used in training. 
 	
 	Results are summarized in Table \ref{tab:bires}. We can see that the results favor a larger batch size, and a larger number of iterations. Perhaps surprisingly, we don't see too much gain from increasing the maximum article length from 250 words to 500 words. This suggests that any linguistic or semantic differences are, in general, noticeable from the start. 
 	
@@ -122,14 +122,14 @@
 	
 	\begin{figure}[H]
 		\includegraphics[width=\textwidth]{figures/images/web-form.png}
-		\caption{The home landing page for the web app.}
+		\caption{The web app;s home page.}
 		\label{fig:form}
 	\end{figure}
 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.75\textwidth]{figures/images/web-results.png}
-		\caption{The web display of the prediction results.}
+		\caption{The display of prediction results.}
 		\label{fig:results}
 	\end{figure}
 		
