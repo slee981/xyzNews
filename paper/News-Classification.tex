@@ -18,14 +18,17 @@
 	
 	\newpage
 	
-	\begin{center}
-		\textit{``If you can't measure it, you can't improve it.''}
-	\end{center}
-    \begin{flushright}
-    	--- Peter Drucker
-    \end{flushright}
+	\abstract{By many reports, there has been an increase in skepticism and polarity in news consumption. Since 2016, we have even heard the president of the United States make accusations of mainstream news sources publishing ``fake news''. With a goal of classifying articles by their news source, I scraped several thousand political news articles from Fox, Vox, and PBS News. I then train a bidirectional LSTM netural network to classify the source of the article based on the text and find that it can accurately predict the correct source. Finally, I develop a simple web application that utilizes the trained network and discuss the social implications of such a tool.}
 	
 	\section{Introduction}
+		
+		\begin{center}
+			\textit{``If you can't measure it, you can't improve it.''}
+		\end{center}
+	    \begin{flushright}
+	    	--- Peter Drucker
+	    \end{flushright}
+	
 		The 2016 United States Presidential Election, to many, raised questions as to the reliability of their news sources. For example, \citet{allcott2017social} estimate that the average US adult read and remembered about one, and possibly up to several, fake news articles during the election period. While they make no statements about the effects of this exposure, the implications are certainly thought provoking. 
 		
 		Since then, many social media companies and other institutions have begun public campaigns to combat the perceived threat from fake news, including explicit efforts from Google and Facebook to remove ``fake news sites'', as documented in \citet{allcott2017social}. 
@@ -34,11 +37,17 @@
 		
 		I first calculate the top words, 2-gram, and 3-gram frequencies to better understand the dataset, and then train a bidirectional, long-term short-term memory (LSTM) recurrent neural network using the GloVe pretrained word embeddings to predict the source of news. 
 		
-		This work fits into existing literature by bridging gaps between the cutting edge of computer science and economics. On the computer science front, bidirectional LSTM recurrent neural networks provide some of the most accurate results for predicting sequential data, whereas the economic work on media bias focuses more on inference based analyses. In particular, \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news---meaning they want to have their prior beliefs validated---and that the profit maximizing response from news companies can account for around 20\% of the variation in political slant or bias. In this same direction, \citet{gentzkow2006media} also find that a theoretical Bayesian consumer will effectively reinforce their beliefs of a given news source quality when they read something that confirms their priors. Together, these works suggest that political news bias may be a tactical response of competing news firms to segment the consumer market according to their heterogeneous beliefs, and, further, that this polarization may be self-reinforcing. In fact, \citet{gentzkow2008competition} go as far as to suggest that competition in information markets may actually be counterproductive in achieving balanced and unbiased news. These effects could explain the relative neutrality of news sources like the BBC that are somewhat insulated from the competitive pressures faced by Fox and Vox news companies. 
-		
-		If these news companies are in fact biased by construction, can we train a computer to detect and classify the differences based on the language alone? Regardless of the answer, there are substantial implications. If yes, then we can create computer software to help classify news based on language content. This would enable news consumers to effectively ``locate'' their news consumption in the same way that a GPS helps to locate yourself on a map, or a calorie tracking app helps to locate your dietary health. However, if the answer is no, then it provides a clear direction for further study in the field of natural language processing and machine learning insofar as additional context is needed to parse the perceived differences. 
-		
 		In this case, I find that a relatively simple, bidirectional, LSTM recurrent neural network can in fact correctly predict the source of an article with very high accuracy. I then use the result of this trained network to build a web app that can allow for a copy-and-paste interface to this classification model. Depending on the extent to which the underlying model enables transfer learning, this web app could ideally serve as a first check on the inherent bias in political news before you read. 
+		
+		\subsection{Literature Review}
+		
+		This work fits into existing literature by bridging gaps between the cutting edge of computer science and economics. On the computer science front, bidirectional LSTM recurrent neural networks provide some of the most accurate results for predicting sequential data. The LSTM architecture was introduced in \citet{hochreiter1997long}, extending the Recurrant Neural Network (RNN) to improve lagged information storage for the purpose of predicting sequential data. More recently, \citet{gers2000recurrent}, \citet{chung2014empirical}, and \citet{yao2015depth} introduce variations on the baseline \citet{hochreiter1997long} LSTM model, although \citet{greff2016lstm} show them all to be roughly equivalent on a variety of prediction tasks. 
+		
+		\citet{schuster1997bidirectional} introduced the first bidirectional RNN reporting a significant predictive improvements over traditional RNNs. Together, bidirectional LSTM architectures prove to be among the most accurate models for language tasks, consistent with \citet{wang2015unified}. 
+		
+		The economic work on media bias focuses more on inference based analyses. In particular, \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news---meaning they want to have their prior beliefs validated---and that the profit maximizing response from news companies can account for around 20\% of the variation in political slant or bias. In this same direction, \citet{gentzkow2006media} also find that a theoretical Bayesian consumer will effectively reinforce their beliefs of a given news source quality when they read something that confirms their priors. Together, these works suggest that political news bias may be a tactical response of competing news firms to segment the consumer market according to their heterogeneous beliefs, and, further, that this polarization may be self-reinforcing. In fact, \citet{gentzkow2008competition} go as far as to suggest that competition in information markets may actually be counterproductive in achieving balanced and unbiased news. These effects could explain the relative neutrality of news sources like the BBC that are somewhat insulated from the competitive pressures faced by Fox and Vox news companies. 
+		
+		If these news companies are in fact biased by construction, can we train a computer to detect and classify the differences based on the language alone? Regardless of the answer, there are substantial implications. If yes, then we can create computer software to help classify news based on language content. This would enable news consumers to effectively ``locate'' their news consumption in the same way that a GPS helps to locate yourself on a map, or a calorie tracking app helps to locate your dietary health. However, if the answer is no, then it provides a clear direction for further study in the field of natural language processing and machine learning insofar as additional context is needed to parse the perceived differences. To my knowledge, this paper provides the first look at news classification using neural networks. 
 		
 		\begin{figure}[H]
 			\includegraphics[width=\textwidth]{figures/images/news-bias.jpg}
