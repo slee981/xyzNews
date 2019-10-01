@@ -1,0 +1,269 @@
+\documentclass{beamer}
+
+\usetheme{Boadilla}
+\usepackage{natbib}
+
+\title{Variation in Political News}
+\subtitle{An NLP Approach}
+\author{Stephen Lee}
+\institute{University of Memphis}
+
+\begin{document}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE SLIDES
+
+	\begin{frame}
+		\maketitle
+	\end{frame}
+
+    \begin{frame}
+    	\frametitle{Outline}
+    	\tableofcontents
+    \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INTRO
+
+\section{Introduction}
+
+    \subsection{Background}
+   
+    \begin{frame}
+   	    \frametitle{Background}
+   	    \begin{center}
+   	    	\textit{``If you can't measure it, you can't improve it.''}
+   	    \end{center}
+   	    \begin{flushright}
+   	    	--- Peter Drucker
+   	    \end{flushright}
+       
+       \begin{itemize}
+       	\item The 2016 United States Presidential Election raised doubts for many about the quality of their news.
+       	\item \citet{allcott2017social} estimate that the average US adult read and remembered about one, and possibly up to several, fake news articles during the election period.
+       	\item It is now not uncommon for the president of the United States to tweet that certain news sources are "Fake News". 
+       \end{itemize}
+    \end{frame}
+   
+	\subsection{Literature Review}
+	
+	\begin{frame}
+		\frametitle{Literature Review: Computer Science}
+		\begin{itemize}
+			\item The LSTM architecture was introduced in \citet{hochreiter1997long}. It builds on the Recurrant Neural Network (RNN) architecture to improve lagged information storage for the purpose of processing sequential data.
+			\item More recently, \citet{gers2000recurrent}, \citet{chung2014empirical}, and \citet{yao2015depth} introduce variations on the baseline \citet{hochreiter1997long} LSTM model, although \citet{greff2016lstm} show them all to be roughly equivalent on a variety of prediction tasks. 
+			\item \citet{schuster1997bidirectional} introduced the first bidirectional RNN reporting a significant predictive improvements over traditional RNNs. Together, bidirectional LSTM architectures prove to be among the most accurate models for language tasks, consistent with \citet{wang2015unified}. 
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Literature Review: Economics}
+		\begin{itemize}
+			\item \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news and that the profit maximizing response from news companies can account for around 20\% of the variation in political slant or bias.
+			\item \citet{gentzkow2006media} also find that a Bayesian consumer will reinforce their beliefs of a given news source quality when they read something that confirms their priors.
+			\item Together, these works suggest that political news bias may tactical, and that this polarization we see may be self-reinforcing.
+			\item \citet{gentzkow2008competition} go as far as to suggest that competition in information markets may actually be counterproductive in achieving balanced and unbiased news. 
+		\end{itemize}
+	\end{frame}
+
+    \subsection{Summary}
+    
+    \begin{frame}
+    	\frametitle{Summary}
+    	\begin{itemize}
+    		\item With a goal of classifying articles by their news source, I scraped several thousand news articles from Fox, Vox, and PBS News.
+    		\item I find that a relatively simple, bidirectional, LSTM recurrent neural network can  correctly predict the source of an article with very high accuracy. 
+    		\item I then use the result of this trained network to build a web app that can allow for a copy-and-paste interface to interact with this classification model. 
+    		\item To my knowledge, this work provides the first look at news classification using neural networks. 
+    	\end{itemize}
+    \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DATA 
+
+\section{Data}
+
+    \begin{frame}
+    	\frametitle{Data}
+    	\begin{itemize}
+    		\item I mined political news articles from the websites of Fox News, Vox News, and PBS News. 
+    		\item Intuitively, the motivation is to focus only on sentiment or semantics, rather than subject matter differences.
+    		\item By some estimations,\footnote{Source: https://www.adfontesmedia.com.} these three news sites represent distinct categories of news: 
+    		\begin{itemize}
+    			\item Fox as a conservative “right” opinion. 
+    			\item PBS as the “center” primary source news position. 
+    			\item Vox as a liberal “left” opinion.
+    		\end{itemize} 
+    	\end{itemize}
+    \end{frame}
+
+    \begin{frame}
+    	\begin{figure}[H]
+    		\includegraphics[width=\textwidth]{figures/images/news-bias.jpg}
+    		\caption{A graphical depiction of the bias in various political news sources.}
+    		\label{fig:news-bias}
+    	\end{figure}
+    \end{frame}
+
+	\begin{frame}
+		\frametitle{Descriptive Statistics}
+		\input{figures/summary_table.tex}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{N-gram Frequencies}
+		\input{figures/word_frequencies.tex}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{N-gram Frequencies}
+		\input{figures/2gram_frequencies.tex}
+	\end{frame}
+
+    \subsection{Challenges}
+    
+    \begin{frame}
+    	\frametitle{Challenges}
+		\begin{enumerate}
+			\item Difference in corpus size from each source. 
+			\begin{itemize}
+				\item Bootstrap the data. 
+			\end{itemize}  
+		
+		    \item Variability of online formatting. 
+		    \begin{itemize}
+		    	\item I removed any mention of their own organization.
+		    	\item Other common and unique affiliations. 
+		    	\item Any other noticeable identifying characteristics.
+		    \end{itemize}   
+	    
+	        \item Difference in the average article length. 
+	        \begin{itemize}
+	        	\item I limited the article length to the first 500 words.
+	        \end{itemize}
+		\end{enumerate}
+    \end{frame}
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% STATISTICAL ANALYSIS 
+
+\section{Statistical Analysis}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NEURAL NETWORK MODEL
+
+\section{LSTM Model}
+
+    \begin{frame}
+    	\frametitle{LSTM Model}
+    	\begin{figure}[H]
+    		\includegraphics[width=\textwidth]{figures/images/lstm-math.png}
+    		\caption{A graphical depiction of a single LSTM cell.\footnote{Source: https://colah.github.io/posts/2015-08-Understanding-LSTMs}}
+    	\end{figure}
+    \end{frame}
+
+    \begin{frame}
+    	\frametitle{Bidirectional Training}
+    	\begin{figure}[H]
+    		\includegraphics[width=\textwidth]{figures/images/bidirectional-net.png}
+    		\caption{A visual representation of a bidirectional LSTM training.}
+    	\end{figure}
+    \end{frame}
+
+    \begin{frame}
+    	\frametitle{Word Embedding}
+    	\begin{itemize}
+    		\item I use the common crawl 840B Global Word Vector (i.e. GloVe).
+    		\item Introduced in \citet{pennington2014glove} and uses 840 billion tokens and a case-sensitive vocabulary of 2.2 million words to map words into a corresponding $300 \times 1$ dimensional vector. 
+    		\item Accordingly, I do minimal preprocessing to the text besides the basic cleaning mentioned previously. 
+    	\end{itemize}
+    \end{frame}
+
+    \begin{frame}
+    	\frametitle{Methodology}
+    	\begin{itemize}
+    		\item I split the data into training (90\%) and testing (10\%). 
+    		\item Using the training data, I fit a birdirectional LSTM using a range of parameterizations, and then calculate F1 scores using the unseen testing dataset. 
+    		\item Similarly, I compare the bidirectional model to a forward only model using the same approach. 
+    	\end{itemize}
+        Note, 
+        \begin{equation*}
+        F_1 =  2 \,\, \frac{Precision \cdot Recall}{Precision + Recall}
+        \end{equation*}
+        Where, 
+        \begin{align*}
+        Precision &= \frac{True Positives}{True Positives + False Positives}\\ \\
+        Recall &= \frac{True Positives}{True Positives + False Negatives}
+        \end{align*}
+    \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RESULTS
+
+\section{Results}
+
+    \begin{frame}
+    	\frametitle{Results: Bidirectional LSTM}
+    	\input{figures/training_results.tex}
+    \end{frame}
+
+    \begin{frame}
+    	\frametitle{Results: Forward LSTM}
+		\input{figures/regular_training_results.tex}
+    \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% IMPLEMENTATION 
+
+\section{Implementation}
+
+     \begin{frame}
+    	\frametitle{Demo}
+    	\begin{figure}[H]
+    		\includegraphics[width=\textwidth]{figures/images/web-form.png}
+    		\caption{The web app;s home page.}
+    		\label{fig:form}
+    	\end{figure}
+    \end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONCLUSION 
+
+\section{Conclusion and Discussion}
+
+     \begin{frame}
+    	\frametitle{Conclusion and Discussion}
+    	\begin{itemize}
+    		\item I've shown that NLP techniques can accurately classify news articles based on language differences in the underlying news sources. 
+    		\item Given \citet{gentzkow2008competition} and \citet{gentzkow2006media}, it seems unlikely that biased news (or even fake news) will disappear anytime soon. 
+    		\item A web application based on these ideas could serve as a starting point to measure news consumption. Analogus to: 
+    		\begin{itemize}
+    			\item Calendars can help to measure our time use.
+    			\item Nutrition apps measure our macronutrients. 
+    			\item GPS measures our geographical position.
+    			\item Can we have an app to measure our news consumption? 
+    		\end{itemize} 
+    	\end{itemize}
+    \end{frame}
+
+    \begin{frame}
+    	\frametitle{End}
+    	\centering \Huge Thank you for your time.
+    	
+    	\centering Questions?
+    \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% REFERENCES
+
+\section{References}
+    \begin{frame}
+    	\frametitle{References}
+    	\bibliographystyle{plainnat}
+    	\bibliography{references/ref}
+    \end{frame}
+
+
+\end{document}

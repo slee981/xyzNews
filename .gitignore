@@ -24,6 +24,10 @@ paper/docs/~$utline.docx
 *.fls
 *.fdb_latexmk
 *.synctex.gz 
+*.nav
+*.out
+*.snm
+
 *.DS_Store
 
 .ipynb_checkpoints

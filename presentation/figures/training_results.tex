@@ -1,0 +1,25 @@
+
+\begin{table}[H]
+    \centering
+    \caption{Training results from the bidirectional LSTM, sorted by F1 score.}
+    \label{tab:bires}
+    \begin{tabular}{c|c|c|c|r|c}
+    \hline \hline
+    \multicolumn{1}{c}{\textbf{Article}}   & \multicolumn{1}{|c}{\textbf{Batch}}  & \multicolumn{1}{|c}{}                     & \multicolumn{1}{|c}{\textbf{Recurrent}}        & \multicolumn{1}{|c}{\textbf{Steps}}     &  \multicolumn{1}{|c}{}  \\
+    \multicolumn{1}{c}{\textbf{Length}}    & \multicolumn{1}{|c}{\textbf{Size}}       & \multicolumn{1}{|c}{\textbf{Dropout}} & \multicolumn{1}{|c}{\textbf{Dropout}}          & \multicolumn{1}{|c}{\textbf{Per Epoch}} & \multicolumn{1}{|c}{\textbf{F1}} \\
+    \hline 
+    &&&&& \\
+    250                                & 64                             & 0.1                         & 0.2                                  & 1000                                & 0.946                  \\
+    500                                & 64                             & 0.2                         & 0.2                                  & 1000                                & 0.944                  \\
+    500                                & 64                             & 0.2                         & 0.1                                  & 1000                                & 0.939                  \\
+    250                                & 64                             & 0.1                         & 0.1                                  & 1000                                & 0.937                  \\
+    500                                & 64                             & 0.1                         & 0.1                                  & 1000                                & 0.937                  \\
+    500                                & 64                             & 0.1                         & 0.2                                  & 1000                                & 0.933                  \\
+    250                                & 64                             & 0.2                         & 0.1                                  & 1000                                & 0.921                  \\
+    250                                & 32                             & 0.2                         & 0.1                                  & 1000                                & 0.910                  \\
+    250                                & 32                             & 0.1                         & 0.1                                  & 1000                                & 0.906                  \\
+    ...                                & ...                            & ...                         &. ..                                  & ...                                 & ...                    \\
+    500                                & 32                             & 0.1                         & 0.1                                  & 500                                 & 0.828                  \\ 
+    \hline               
+    \end{tabular}
+\end{table}

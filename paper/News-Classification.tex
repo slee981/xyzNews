@@ -10,6 +10,9 @@
 \title{A NLP Approach to Understanding Variation in Political News}
 
 \begin{document}
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% HOUSEKEEPING
+	
 	\maketitle 
 	
 	\newpage
@@ -17,6 +20,9 @@
 	\tableofcontents
 	
 	\newpage
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% INTRO
 	
 	\abstract{By many reports, there has been an increase in skepticism and polarity in news consumption. Since 2016, we have even heard the president of the United States make accusations of mainstream news sources publishing ``fake news''. With a goal of classifying articles by their news source, I scraped several thousand political news articles from Fox, Vox, and PBS News. I then train a bidirectional LSTM netural network to classify the source of the article based on the text and find that it can accurately predict the correct source. Finally, I develop a simple web application that utilizes the trained network and discuss the social implications of such a tool.}
 	
@@ -54,6 +60,9 @@
 			\caption{A graphical depiction of the bias in various political news sources.}
 			\label{fig:news-bias}
 		\end{figure}
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% DATA
 		
 	\section{Data}
 	    I mined political news articles from the websites of Fox News, Vox News, and PBS News. Importantly, I restricted focus to only URLs that contained an explicit reference to politics i.e. articles from their respective political sections. This allowed me to collect articles that were as similar  as possible to each other in order to try and limit the chances of spurious predictive results. Intuitively, the motivation behind this is to facilitate classification based only on sentiment or semantics, rather than subject matter differences. To better understand how similar the content of these articles are, I construct n-gram tokens and count the frequency of their occurrences. In Table \ref{tab:ngram}, we see the most frequent one, two, and three-gram phrases from the collected corpus.\footnote{The associated counts of each n-gram phrase are shown in Tables \ref{tab:1gram}, \ref{tab:2gram}, and \ref{tab:3gram}, in the Appendix.}
@@ -74,8 +83,16 @@
 	    Second, due to the variability of online formatting, it's worth noting the possibility that, even after cleaning, each source exhibits some subtle idiosyncratic characteristics that could allow a neural network to detect those instead of pure sentiment and semantic differences. To mitigate this, I removed any mention of their own organization, any other common and unique affiliations, and other identifying characteristics.\footnote{For example, I removed any mention of `Fox' from every Fox News article. Similarly, Fox News cited the ``Associated Press'' disproportionately often, so I also removed that string. Additionally, PBS News begins each article with location information in the following format: ``LOCATION --- Start of article...''. In this case, I removed the names of the most frequently referenced cities and the following ``---'' character.} 
 	    
 	    Finally, each news source shows a difference in the average article length. To overcome this, I limited the article length to a maximum of the first 500 words to ensure that no single source was consistently shorter when fed into the neural network. 
+	    
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% STATISTICAL ANALYSIS 
+	
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% LSTM MODELS
 	    	
-	\section{Models}
+	\section{LSTM Models}
 	As a baseline, I use long-term short-term memory (LSTM) neural network. The LSTM architecture was introduced in \citet{hochreiter1997long}, and extended the Recurrant Neural Network (RNN) to improve lagged information storage for the purpose of predicting sequential data. The key advantage of the recurrent LSTM architecture is the ability for the cell to ``remember'' relevant lagged values, while ``forgetting'' less useful ones. Visually, we can see a representation of a single LSTM unit in Figure \ref{fig:lstm}.\footnote{Source: https://colah.github.io/posts/2015-08-Understanding-LSTMs}
 	
 	\begin{figure}[H]
@@ -98,6 +115,10 @@
 	
 	\subsection{Word Embedding}
 	Using the common crawl 840B Global Word Vector (i.e. GloVe), I mapped each word into its corresponding $300 \times 1$ dimensional vector.\footnote{This embedding is introduced in \citet{pennington2014glove} and uses 840 billion tokens and a case-sensitive vocabulary of 2.2 million words to map words into a corresponding $300 \times 1$ dimensional vector.} Since this set of embeddings are case sensitive and unstemmed, I do minimal preprocessing to the text besides the basic cleaning mentioned in Section \ref{Challenges}.
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% RESULTS
 		
 	\section{Results}
 	
@@ -121,6 +142,9 @@
 	
 	As an additional exercise for robustness and comparison, I used similar parameters to train an LSTM recurrent neural network unidirectionally, rather than bidirectionally. Interestingly, we see that the best performing unidirectional model still under performed even the worst performing bidirectional model. Results from this exercise are shown in the Appendix in Figure \ref{tab:unires}.
 	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% IMPLEMENTATION
+	
 	\section{Implementation}
 	
 	To make use of this trained model in application, I wrote a simple web interface that enables passing text from an arbitrary news article through a form, and returns values that can be interpreted as predictions of the likelihood that a given article is from Fox, Vox, or PBS News. The commercial use case for this type of app is to provide context as to the type of writing, either before or after the consumer has read the article. Ideally, each user could login and see a history of the news they consume---this could help interested readers identify if and when they are in a political bubble or echo-chamber. Idealistically, it could help balance information consumption. 
@@ -141,6 +165,9 @@
 		\caption{The display of prediction results.}
 		\label{fig:results}
 	\end{figure}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% CONCLUSION
 		
 	\section{Conclusion and Discussion}
 	I've shown that a neural network can accurately classify news articles based on language differences in the underlying news sources. These results have implications for our politically polarized world, where even scientific ``facts'' are now often disputed. While there are plenty of factors that could motivate news companies to intentionally bias their news,  \citet{gentzkow2008competition} and \citet{gentzkow2006media} suggest that the profit maximizing response of a company is to produce a news product that confirms consumers prior beliefs. Thus, given a society of individuals with heterogeneous preferences and beliefs, and a competitive news information market, it seems unlikely that biased news (or even fake news) will disappear anytime soon. 
@@ -148,6 +175,9 @@
 	A software application based on the ideas presented above could serve as a starting point to measure news consumption---much in the same way that calendars can help to measure our time use, nutrition apps measure our consumption of macronutrients, and GPS measures our geographical position. 
 	
 	\newpage
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% APPENDIX
 	
 	\section{Appendix}
 	
@@ -162,6 +192,9 @@
 	\end{center}
 
 	\newpage
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% REFERENCES
 	
 	\bibliographystyle{plainnat}
 	\bibliography{references/ref}
