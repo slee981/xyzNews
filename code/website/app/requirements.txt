@@ -3,3 +3,5 @@ keras
 flask 
 tensorflow 
 tqdm
+wtforms
+gunicorn==19.3.0
