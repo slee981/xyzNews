@@ -10,7 +10,7 @@
 \setlength{\parindent}{4em}
 
 \author{Stephen M. Lee}
-\title{A NLP Approach to Understanding Variation in Political News}
+\title{Variation in Political News \\ \large{An NLP Approach}}
 
 \begin{document}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,7 +61,7 @@
 		
 		The economic work on media bias focuses more on inference based analyses. In particular, \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news---meaning they want to have their prior beliefs validated---and that the profit maximizing response from news companies can account for around 20\% of the variation in political slant or bias. In this same direction, \citet{gentzkow2006media} also find that a theoretical Bayesian consumer will effectively reinforce their beliefs of a given news source quality when they read something that confirms their priors. Together, these works suggest that political news bias may be a tactical response of competing news firms to segment the consumer market according to their heterogeneous beliefs, and, further, that this polarization may be self-reinforcing. In fact, \citet{gentzkow2008competition} go as far as to suggest that competition in information markets may actually be counterproductive in achieving balanced and unbiased news. These effects could explain the relative neutrality of news sources like the BBC that are somewhat insulated from the competitive pressures faced by Fox and Vox news companies. 
 		
-		If these news companies are in fact biased by construction, can we train a computer to detect and classify the differences based on the language alone? Regardless of the answer, there are substantial implications. If yes, then we can create computer software to help classify news based on language content. This would enable news consumers to effectively ``locate'' their news consumption in the same way that a GPS helps to locate yourself on a map, or a calorie tracking app helps to locate your dietary health. However, if the answer is no, then it provides a clear direction for further study in the field of natural language processing and machine learning insofar as additional context is needed to parse the perceived differences. To my knowledge, this paper provides the first look at news classification using neural networks. 
+		If these news companies are in fact biased by construction, can we train a computer to detect and classify the differences based on the language alone? Regardless of the answer, there are substantial implications. If yes, then we can create computer software to help classify news based on language content. This would enable news consumers to effectively ``locate'' their news consumption in the same way that a GPS helps to locate yourself on a map, or a calorie tracking app helps to locate your dietary health. However, if the answer is no, then it provides a clear direction for further study in the field of natural language processing and machine learning insofar as additional context is needed to parse the perceived differences. To my knowledge, this paper provides the first thorough NLP based approach to understanding semantic differences across news sources. 
 		
 		\begin{figure}[H]
 			\includegraphics[width=\textwidth]{figures/images/news-bias.jpg}
@@ -81,7 +81,7 @@
 	    
 	    In addition to subject, wording, and phrasing, I also check for grammatical and structural differences with a simple lexical analysis. Using the University of Pennsylvania tagset, I count the percent of adjectives and adverbs in each article and calculate the average for each news source. I find very similar use of adjectives and adverbs for Fox and PBS, and a slightly more frequent use with Vox. Intuitively, the goal is to understand, on average, how descriptive the language is for each source. Toward this end, I included comparatives (e.g. better, worse, greater) and superlatives (e.g. best, worst, greatest) in the count.
 	    
-	    Finally, I calculate the average number of words per article by source, and the average number of words per sentence, again grouped by news source. Here I find that PBS writes the shortest sentences, while Vox writes the longest. This measure is relevant when considering the average number of words per sentence as a proxy for complexity, as introduced in \citet{flesch1948new}. Table \ref{tab:summary} summarizes these descriptive statistics.  
+	    Finally, I calculate the average number of words per article by source, and the average number of words per sentence, again grouped by news source. Here I find that PBS writes the shortest sentences, while Vox writes the longest. This measure is relevant when considering the average number of words per sentence as a proxy for complexity, as suggested by \citet{flesch1948new}. Table \ref{tab:summary} summarizes these descriptive statistics.  
  
     	\input{figures/summary_table.tex}
 	    
