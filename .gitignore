@@ -12,8 +12,8 @@ presentation/proposal
 docs/todo.txt
 
 # ignore word embeddings
-# use glove.840B.300d.txt
-code/website/app/word_embedding
+# use glove.840B.300d.txt, the file is huge
+code/website/app/word_embedding/*.txt
 
 paper/~$utline.docx
 paper/docs/~$utline.docx
