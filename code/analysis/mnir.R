@@ -9,12 +9,13 @@ rm(list=ls())
 # ADJUST PARAMS HERE
 # select source_one to be the more liberal source i.e. Vox or PBS
 # select source_two to be the more conservative i.e. PBS or Fox
-source_one <- 'Vox'
+source_one <- 'PBS'
 source_two <- 'Fox'
-ngrams <- 2
+ngrams <- 3
 
 # must be in the working directory './project'
 FILE_PATH = paste0('./data/R_data/', tolower(source_one), '_', tolower(source_two), '_', ngrams, '_gram_counts.rda')
+TABLE_PATH = paste0('./paper/figures/', tolower(source_one), '_', tolower(source_two),'_contributions.tex')
 
 ##################################################################################
 # Load data
@@ -51,8 +52,22 @@ fit <- dmr(cl, covars, article_ngram_counts, gamma=1, nlambda=10)
 
 # get notable words
 B <- coef(fit)
-B[2,order(B[2,])[1:7]]
-B[2,order(-B[2,])[1:7]]
+
+contribution_left <- B[2,order(B[2,])[1:10]]
+contribution_right <- B[2,order(-B[2,])[1:10]]
+top_left <- as.data.frame(contribution_left)
+top_right <- as.data.frame(contribution_right)
+
+# transform into nice dataframe 
+top_left[source_one] <- rownames(top_left)
+row.names(top_left) <- 1:10
+top_right[source_two] <- rownames(top_right)
+row.names(top_right) <- 1:10
+giveaway_phrases <- data.frame(top_left[c(2,1)], top_right[c(2,1)])
+
+print(xtable(giveaway_phrases, type='latex'), file = TABLE_PATH)
+
+#############################################################################
 
 # look at fit
 par(mfrow=c(1,2))

@@ -50,19 +50,21 @@
 	\begin{frame}
 		\frametitle{Literature Review: Computer Science}
 		\begin{itemize}
-			\item The LSTM architecture was introduced in \citet{hochreiter1997long}. It builds on the Recurrant Neural Network (RNN) architecture to improve lagged information storage for the purpose of processing sequential data.
-			\item More recently, \citet{gers2000recurrent}, \citet{chung2014empirical}, and \citet{yao2015depth} introduce variations on the baseline \citet{hochreiter1997long} LSTM model, although \citet{greff2016lstm} show them all to be roughly equivalent on a variety of prediction tasks. 
-			\item \citet{schuster1997bidirectional} introduced the first bidirectional RNN reporting a significant predictive improvements over traditional RNNs. Together, bidirectional LSTM architectures prove to be among the most accurate models for language tasks, consistent with \citet{wang2015unified}. 
+			\item The LSTM architecture was introduced in \citet{hochreiter1997long}. 
+			\item More recently, \citet{gers2000recurrent}, \citet{chung2014empirical}, and \citet{yao2015depth} introduce variations on the baseline \citet{hochreiter1997long} LSTM model, 
+			\item \citet{greff2016lstm} show them all to be roughly equivalent. 
+			\item \citet{schuster1997bidirectional} introduced the first bidirectional RNN. 
+			\item Together, bidirectional LSTM architectures prove to be among the most accurate models for language tasks, consistent with \citet{wang2015unified}. 
 		\end{itemize}
 	\end{frame}
 	
 	\begin{frame}
 		\frametitle{Literature Review: Economics}
 		\begin{itemize}
-			\item \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news and that the profit maximizing response from news companies can account for around 20\% of the variation in political slant or bias.
-			\item \citet{gentzkow2006media} also find that a Bayesian consumer will reinforce their beliefs of a given news source quality when they read something that confirms their priors.
+			\item \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news and this can account for around 20\% of the variation in political slant or bias.
+			\item \citet{gentzkow2006media} also show that a Bayesian consumer will reinforce their beliefs of a given news source quality when they read something that confirms their priors.
 			\item Together, these works suggest that political news bias may tactical, and that this polarization we see may be self-reinforcing.
-			\item \citet{gentzkow2008competition} go as far as to suggest that competition in information markets may actually be counterproductive in achieving balanced and unbiased news. 
+			\item \citet{gentzkow2008competition} suggest that competition in information markets may actually be counterproductive. 
 		\end{itemize}
 	\end{frame}
 
@@ -74,7 +76,7 @@
     		\item With a goal of classifying articles by their news source, I scraped several thousand news articles from Fox, Vox, and PBS News.
     		\item I find that a relatively simple, bidirectional, LSTM recurrent neural network can  correctly predict the source of an article with very high accuracy. 
     		\item I then use the result of this trained network to build a web app that can allow for a copy-and-paste interface to interact with this classification model. 
-    		\item To my knowledge, this work provides the first look at news classification using neural networks. 
+    		\item To my knowledge, this work provides the first thorough NLP approach to understanding semantic differences across news sources. 
     	\end{itemize}
     \end{frame}
 
@@ -144,11 +146,31 @@
 		\end{enumerate}
     \end{frame}
     
+	\subsection{Statistical Analysis}
+	
+	\begin{frame}
+		\frametitle{Statistical Analysis}
+		\begin{itemize}
+			\item Based on \citet{taddy2013multinomial}, I perform a statistical analysis of the data to see what words are most related to the various sources.
+			\item Intuitively, consider speech as making draws from a multinomial distribution, based on your underlying ``sentiment''. 
+			\item Using the multinomial inverse regression, we can compare to see what phrases are most associated with which news source. 
+		\end{itemize}
+	\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% STATISTICAL ANALYSIS 
+	\begin{frame}
+		\frametitle{Vox and PBS}
+		\input{figures/vox_pbs_contributions.tex}
+	\end{frame}
 
-\section{Statistical Analysis}
+	\begin{frame}
+		\frametitle{PBS and Fox}
+		\input{figures/pbs_fox_contributions.tex}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Vox and Fox}
+		\input{figures/vox_fox_contributions.tex}
+	\end{frame}
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEURAL NETWORK MODEL
@@ -222,7 +244,7 @@
     	\frametitle{Demo}
     	\begin{figure}[H]
     		\includegraphics[width=\textwidth]{figures/images/web-form.png}
-    		\caption{The web app;s home page.}
+    		\caption{The web app's home page.}
     		\label{fig:form}
     	\end{figure}
     \end{frame}
@@ -259,11 +281,14 @@
 % REFERENCES
 
 \section{References}
+	\begingroup
+	\tiny
     \begin{frame}
     	\frametitle{References}
     	\bibliographystyle{plainnat}
     	\bibliography{references/ref}
     \end{frame}
+    \endgroup
 
 
 \end{document}

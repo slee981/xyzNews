@@ -5,6 +5,9 @@
 \usepackage{float}
 \usepackage{pdflscape}
 \usepackage{natbib}
+\usepackage[margin=1in]{geometry}
+\usepackage[document]{ragged2e}
+\setlength{\parindent}{4em}
 
 \author{Stephen M. Lee}
 \title{A NLP Approach to Understanding Variation in Political News}
@@ -17,6 +20,10 @@
 	
 	\newpage
 	
+	\abstract{By many reports, there has been an increase in skepticism and polarity in news consumption. Since 2016, we have even heard the president of the United States make accusations of mainstream news sources publishing ``fake news''. With a goal of classifying articles by their news source, I scraped several thousand political news articles from Fox, Vox, and PBS News. I then train a bidirectional LSTM netural network to classify the source of the article based on the text and find that it can accurately predict the correct source. Finally, I develop a simple web application that utilizes the trained network and discuss the social implications of such a tool.}
+		
+	\newpage
+	
 	\tableofcontents
 	
 	\newpage
@@ -24,16 +31,17 @@
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% INTRO
 	
-	\abstract{By many reports, there has been an increase in skepticism and polarity in news consumption. Since 2016, we have even heard the president of the United States make accusations of mainstream news sources publishing ``fake news''. With a goal of classifying articles by their news source, I scraped several thousand political news articles from Fox, Vox, and PBS News. I then train a bidirectional LSTM netural network to classify the source of the article based on the text and find that it can accurately predict the correct source. Finally, I develop a simple web application that utilizes the trained network and discuss the social implications of such a tool.}
+	\vspace{2\baselineskip}
+	\begin{center}
+		\textit{``If you can't measure it, you can't improve it.''}
+	\end{center}
+	\begin{flushright}
+		--- Peter Drucker
+	\end{flushright}
+
+	\vspace{2\baselineskip}
 	
 	\section{Introduction}
-		
-		\begin{center}
-			\textit{``If you can't measure it, you can't improve it.''}
-		\end{center}
-	    \begin{flushright}
-	    	--- Peter Drucker
-	    \end{flushright}
 	
 		The 2016 United States Presidential Election, to many, raised questions as to the reliability of their news sources. For example, \citet{allcott2017social} estimate that the average US adult read and remembered about one, and possibly up to several, fake news articles during the election period. While they make no statements about the effects of this exposure, the implications are certainly thought provoking. 
 		
@@ -84,10 +92,16 @@
 	    
 	    Finally, each news source shows a difference in the average article length. To overcome this, I limited the article length to a maximum of the first 500 words to ensure that no single source was consistently shorter when fed into the neural network. 
 	    
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	% STATISTICAL ANALYSIS 
-	
-	
+	    \subsection{Statistical Analysis}
+	    To get additional context about the contents of the data, I perform a statistical analysis of the data to see what words are most related to the various sources. In particular, \citet{taddy2013multinomial} introduced a framework for using high-dimensional text data in statistical analysis. While I leave the technical details to the paper itself, the intuition is as follows. Suppose we have $N$ documents, each containing some text $x_i$, and a corpus vocabulary that has $p$ distinct tokens. Further, assume that each text document is related to an underlying sentiment $s_i$, whereby the sentiment is influential in creating the text.\footnote{More specifically, imagine that text is generated in accordance with some probability distribution function $g(x_i | s_i)$ as opposed to the sentiment itself being generated, i.e. $f(s_i | x_i)$. The following examples highlight the intuitive differences. One can imagine that saying the phrase ``Country music is fantastic'' is unlikely to \textit{cause} someone to suddenly like country music -- rather, we would suspect that someone who already likes country music would be more likely to say those words. Conversely, if someone makes an offensive comment about a family member, it may cause you to get angry and hit them, not vice versa.} Since the size of the vocabulary, $p$, can often take values on the order of magnitude 10,000 or more, the simple regression of outcome variable $Y$ on text $X$ (i.e. $Y= \beta X$) will not provide an efficient estimate. What the paper proposed is a method for projecting a document with dimensions $p \times 1$ into a single variable $z_i$ that still preserves information about the sentiment. This technique is useful in part because the first stage multinomial inverse regression allows us to see, pairwise, what phrases are most associated with which source. 
+	    
+	    \input{figures/vox_pbs_contributions.tex}
+	    \input{figures/pbs_fox_contributions.tex}
+	    \input{figures/vox_fox_contributions.tex}
+		
+		Here, the magnitude of the number represents how much seeing that phrase contributes to your belief of the underlying news source. So, for example, reading the phrase ``york democrat rep''---which, before stemming refers to the phrase ``[New] York Democrat, representative [...]''---is a good sign that you are reading something written by Fox News. Contextually, the democratic representative from New York is Alexandria Ocasio-Cortez, which also comes up as a signal that the source is Fox News. Interestingly, we notice that seeing the name of a democatratic Congresswomen is a  strong indication that the source is Fox News. Similarly, we see that reading phrases about health care is a sign of a Vox News article. 
+		
+		Ultimately, this description is valuable insofar as it can help guide our intuition for the particulars of the data, and to help understand some of the similarities and differences between the various sources. 
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% LSTM MODELS
@@ -177,6 +191,14 @@
 	\newpage
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% REFERENCES
+	
+	\bibliographystyle{plainnat}
+	\bibliography{references/ref}
+	
+	\newpage
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% APPENDIX
 	
 	\section{Appendix}
@@ -186,17 +208,9 @@
 		
 		\input{figures/2gram_frequencies.tex}
 		
-	    \input{figures/3gram_frequencies.tex}
+		\input{figures/3gram_frequencies.tex}
 		
 		\input{figures/regular_training_results.tex}
 	\end{center}
-
-	\newpage
-	
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	% REFERENCES
-	
-	\bibliographystyle{plainnat}
-	\bibliography{references/ref}
 	
 \end{document}
