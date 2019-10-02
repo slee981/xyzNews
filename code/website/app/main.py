@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+############################################################
+# Imports
+############################################################
+
 from keras.models import load_model
 from keras.utils import to_categorical
 import flask
@@ -7,6 +13,10 @@ from tqdm import tqdm
 import os
 
 from inputForm import InputForm
+
+############################################################
+# Storage
+############################################################
 
 app = flask.Flask(__name__)
 app.static_folder = os.path.join(os.getcwd(), 'static')
@@ -18,6 +28,9 @@ EMBEDDINGS_INDEX = {}
 MODEL = None
 graph = tf.get_default_graph()
 
+############################################################
+# Functions
+############################################################
 
 def get_embeddings():
     print("\nReading in word embeddings. This may take a couple minutes.")
@@ -111,6 +124,9 @@ def predict():
     # return flask.jsonify(data)
     return flask.jsonify(data)
 
+############################################################
+# Main
+############################################################
 
 # if this is the main thread of execution first load the model and
 # then start the server
