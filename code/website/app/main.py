@@ -4,7 +4,6 @@
 # Imports
 ############################################################
 
-from keras.models import load_model
 from keras.utils import to_categorical
 import flask
 import numpy as np
@@ -13,6 +12,10 @@ from tqdm import tqdm
 import os
 
 from inputForm import InputForm
+from load_model import MODEL, EMBEDDING_INDEX
+
+print('Model is not empty: {}'.format(MODEL == None))
+print('Embeddings have {} entries.'.format(len(EMBEDDING_INDEX)))
 
 ############################################################
 # Storage
@@ -22,49 +25,27 @@ app = flask.Flask(__name__)
 app.static_folder = os.path.join(os.getcwd(), 'static')
 app.static_url_path = os.path.join(os.getcwd(), 'static')
 
-MODEL_PATH = "./models/xyzNews-classifier.h5"
-EMBEDDING_PATH = "word_embedding/glove.840B.300d.txt"
-EMBEDDINGS_INDEX = {}
-MODEL = None
 graph = tf.get_default_graph()
 
 ############################################################
 # Functions
 ############################################################
 
-def get_embeddings():
-    print("\nReading in word embeddings. This may take a couple minutes.")
-    with open(EMBEDDING_PATH, encoding="utf8") as embed:
-        try:
-            for line in tqdm(embed):
-                values = line.split(" ")
-                word = values[0]
-                coefs = np.asarray(values[1:], dtype="float32")
-                EMBEDDINGS_INDEX[word] = coefs
-        except KeyboardInterrupt:
-            print("\n\nInterrupted. Closing the file and stopping... ")
-
 
 def prepare_article(text, article_length=500):
+    global EMBEDDING_INDEX
     empty_emb = np.zeros(300)  # each word is represented by a length 300 vector
     text = text.split()[:article_length]  # each article is length 500
 
     # look for word embedding, return zero array otherwise.
-    embeds = [np.asarray(EMBEDDINGS_INDEX.get(x, empty_emb)) for x in text]
+    embeds = [np.asarray(EMBEDDING_INDEX.get(x, empty_emb)) for x in text]
     embeds += [empty_emb] * (article_length - len(embeds))
     return np.array(embeds).reshape(1, 500, 300)
 
 
-def load_data_and_model():
-    global MODEL
-    get_embeddings()
-    print("Loading model...")
-    MODEL = load_model(MODEL_PATH)
-    MODEL._make_predict_function()
-
-
 @app.route("/", methods=["GET", "POST"])
 def home():
+    global MODEL
     # init form and predictions
     form = InputForm(flask.request.form)
     prediction = None
@@ -97,6 +78,7 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    global MODEL
     # initialize the data dictionary that will be returned
     data = {"success": False}
 
