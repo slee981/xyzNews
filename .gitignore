@@ -33,4 +33,4 @@ paper/docs/~$utline.docx
 .ipynb_checkpoints
 *.tar.gz
 .vscode/
-*/__pycache__/
+*.pyc
