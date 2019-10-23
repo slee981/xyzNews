@@ -2,6 +2,7 @@
 
 \usetheme{Boadilla}
 \usepackage{natbib}
+\usepackage{hyperref}
 
 \title{Variation in Political News}
 \subtitle{An NLP Approach}
@@ -35,13 +36,13 @@
    	    	\textit{``If you can't measure it, you can't improve it.''}
    	    \end{center}
    	    \begin{flushright}
-   	    	--- Peter Drucker
+   	    	--- Lord Kelvin\footnote{The actual source of this quote is hard to pin down. While some attribute the quote to Lord Kelvin, others attribute it to Peter Drucker. A comment on stackoverflow further suggests that Antoine-Augustin Cournot was actually the first to express it in concise form in ``De l'origine et des limites de la correspondance entre l'algebre et la geometrie'' in 1847.}
    	    \end{flushright}
        
        \begin{itemize}
        	\item The 2016 United States Presidential Election raised doubts for many about the quality of their news.
        	\item \citet{allcott2017social} estimate that the average US adult read and remembered about one, and possibly up to several, fake news articles during the election period.
-       	\item It is now not uncommon for the president of the United States to tweet that certain news sources are "Fake News". 
+       	\item While the ``fake news'' problem is often referenced, a full solution may not actually exist. 
        \end{itemize}
     \end{frame}
    
@@ -50,9 +51,9 @@
 	\begin{frame}
 		\frametitle{Literature Review: Computer Science}
 		\begin{itemize}
-			\item The LSTM architecture was introduced in \citet{hochreiter1997long}. 
-			\item More recently, \citet{gers2000recurrent}, \citet{chung2014empirical}, and \citet{yao2015depth} introduce variations. 
-			\item \citet{greff2016lstm} show them all to be roughly equivalent. 
+			\item \citet{volkova2017separating}, \citet{wang2017liar}, and \citet{shu2017fake} all look at detecting real vs. fake news. 
+			\item This isn't the same question, however. We need tools. 
+			\item The LSTM architecture was introduced in \citet{hochreiter1997long}. \citet{greff2016lstm} show several variations to all be roughly equivalent. 
 			\item \citet{schuster1997bidirectional} introduced the first bidirectional RNN. 
 			\item Together, bidirectional LSTM architectures prove to be among the most accurate models for language tasks, consistent with \citet{wang2015unified}. 
 		\end{itemize}
@@ -63,8 +64,8 @@
 		\begin{itemize}
 			\item \citet{gentzkow2010drives} find that readers prefer to consume ``like-minded'' news and this can account for around 20\% of the variation in political slant or bias.
 			\item \citet{gentzkow2006media} also show that a Bayesian consumer will reinforce their beliefs of a given news source quality when they read something that confirms their priors.
-			\item Together, these works suggest that political news bias may tactical, and that this polarization we see may be self-reinforcing.
 			\item \citet{gentzkow2008competition} suggest that competition in information markets may actually be counterproductive. 
+			\item Together, these works suggest that political news bias may tactical, and that this polarization we see may be self-reinforcing.
 		\end{itemize}
 	\end{frame}
 
@@ -74,9 +75,9 @@
     	\frametitle{Summary}
     	\begin{itemize}
     		\item With a goal of classifying articles by their news source, I scraped several thousand news articles from Fox, Vox, and PBS News.
-    		\item I find that a relatively simple, bidirectional, LSTM recurrent neural network can  correctly predict the source of an article with very high accuracy. 
-    		\item I then use the result of this trained network to build a web app that can allow for a copy-and-paste interface to interact with this classification model. 
-    		\item To my knowledge, this work provides the first thorough NLP approach to understanding semantic differences across news sources. 
+    		\item I found that a bidirectional, LSTM recurrent neural network can correctly predict the source of an article with high accuracy. 
+    		\item I then used the result of this trained network to build a web app that can allow for a copy-and-paste interface to interact with this classification model. 
+    		\item To my knowledge, this work provides the first thorough NLP based approach to understanding semantic differences across news sources. 
     	\end{itemize}
     \end{frame}
 
@@ -177,6 +178,15 @@
 
 \section{LSTM Model}
 
+     \begin{frame}
+	   	\frametitle{Word Embedding}
+	   	\begin{itemize}
+	   		\item I use the common crawl 840B Global Word Vector (i.e. GloVe).
+	   		\item Introduced in \citet{pennington2014glove} and uses 840 billion tokens and a case-sensitive vocabulary of 2.2 million words to map words into a corresponding $300 \times 1$ dimensional vector. 
+	   		\item Accordingly, I do minimal preprocessing to the text besides the basic cleaning mentioned previously. 
+	   	\end{itemize}
+	   \end{frame}
+
     \begin{frame}
     	\frametitle{LSTM Model}
     	\begin{figure}[H]
@@ -194,19 +204,11 @@
     \end{frame}
 
     \begin{frame}
-    	\frametitle{Word Embedding}
-    	\begin{itemize}
-    		\item I use the common crawl 840B Global Word Vector (i.e. GloVe).
-    		\item Introduced in \citet{pennington2014glove} and uses 840 billion tokens and a case-sensitive vocabulary of 2.2 million words to map words into a corresponding $300 \times 1$ dimensional vector. 
-    		\item Accordingly, I do minimal preprocessing to the text besides the basic cleaning mentioned previously. 
-    	\end{itemize}
-    \end{frame}
-
-    \begin{frame}
     	\frametitle{Methodology}
     	\begin{itemize}
     		\item I split the data into training (90\%) and testing (10\%). 
-    		\item Using the training data, I fit a birdirectional LSTM using a range of parameterizations, and then calculate F1 scores using the unseen testing dataset. 
+    		\item Training data: fit a birdirectional LSTM using a range of parameterizations. 
+    		\item Testing data: make predictions, compare to actual, and calculate F1 scores.
     		\item Similarly, I compare the bidirectional model to a forward only model using the same approach. 
     	\end{itemize}
         Note, 
@@ -244,7 +246,7 @@
     	\frametitle{Demo}
     	\begin{figure}[H]
     		\includegraphics[width=\textwidth]{figures/images/web-form.png}
-    		\caption{The web app's home page.}
+    		\caption{The web app's home page. \href{http://35.245.203.56:5000}{Link to page.}}
     		\label{fig:form}
     	\end{figure}
     \end{frame}
@@ -260,7 +262,7 @@
     	\begin{itemize}
     		\item I've shown that NLP techniques can accurately classify news articles based on language differences in the underlying news sources. 
     		\item Given \citet{gentzkow2008competition} and \citet{gentzkow2006media}, it seems unlikely that biased news (or even fake news) will disappear anytime soon. 
-    		\item A web application based on these ideas could serve as a starting point to measure news consumption. Analogus to: 
+    		\item A web application based on these ideas could serve as a starting point to measure bias in our news consumption. Analogous to: 
     		\begin{itemize}
     			\item Calendars can help to measure our time use.
     			\item Nutrition apps measure our macronutrients. 
