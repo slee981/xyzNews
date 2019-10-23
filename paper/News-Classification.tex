@@ -108,6 +108,9 @@
 		Here, the magnitude of the number represents how much seeing that phrase contributes to your belief of the underlying news source. So, for example, reading the phrase ``york democrat rep''---which, before stemming refers to the phrase ``[New] York Democrat, representative [...]''---is a good sign that you are reading something written by Fox News. Contextually, the democratic representative from New York is Alexandria Ocasio-Cortez, which also comes up as a signal that the source is Fox News. Interestingly, we notice that seeing the name of a democatratic Congresswomen is a  strong indication that the source is Fox News. Similarly, we see that reading phrases about health care is a sign of a Vox News article. 
 		
 		Ultimately, this description is valuable insofar as it can help guide our intuition for the particulars of the data, and to help understand some of the similarities and differences between the various sources. 
+		
+		\subsection{Word Embedding}
+		Using the common crawl 840B Global Word Vector (i.e. GloVe), I mapped each word into its corresponding $300 \times 1$ dimensional vector.\footnote{This embedding is introduced in \citet{pennington2014glove} and uses 840 billion tokens and a case-sensitive vocabulary of 2.2 million words to map words into a corresponding $300 \times 1$ dimensional vector.} Since this set of embeddings are case sensitive and unstemmed, I do minimal preprocessing to the text besides the basic cleaning mentioned in Section \ref{Challenges}.
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% LSTM MODELS
@@ -132,9 +135,6 @@
 	 \end{figure}
 	
 	In order to help understand the advantages of training bidirectionally, consider the following sentence. ``The man sat to eat an orange, which, strangely, matched the color of his beard with tremendous accuracy.'' When we as humans read that sentence, we can retroactively modify our understanding. In other words, we can update our image of the man even after he was first mentioned. In this example, when reading the word man, it's possible to first imagine a cleanly shaved man with short dark hair based on the little previous context. However, only \textit{after} finishing the sentence, we can update our mental image to a man with long orange hair and a trimmed beard. Similarly, training the neural network both forward and backward can allow for additional context. 
-	
-	\subsection{Word Embedding}
-	Using the common crawl 840B Global Word Vector (i.e. GloVe), I mapped each word into its corresponding $300 \times 1$ dimensional vector.\footnote{This embedding is introduced in \citet{pennington2014glove} and uses 840 billion tokens and a case-sensitive vocabulary of 2.2 million words to map words into a corresponding $300 \times 1$ dimensional vector.} Since this set of embeddings are case sensitive and unstemmed, I do minimal preprocessing to the text besides the basic cleaning mentioned in Section \ref{Challenges}.
 	
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
