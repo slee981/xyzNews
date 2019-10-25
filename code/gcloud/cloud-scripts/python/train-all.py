@@ -49,10 +49,10 @@ FILE = 'clean_article_df.csv'
 EMBEDS = 'glove.840B.300d.txt'
 ARTICLE_LENGTH = 500                                 # max length for an article
 
-SID = 'AC452ff5bfa2b523d0380e4938761d59ba'
-TOKEN = 'bfb56b152a943a98d7e216d2a709c7c4'
-FROM_ = '+16292095399'
-TO_ = '+16159444486'
+SID = 'something'
+TOKEN = 'something'
+FROM_ = 'something'
+TO_ = 'something'
 
 ################################################################################
 # Helper Functions

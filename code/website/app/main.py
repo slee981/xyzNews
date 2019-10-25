@@ -119,5 +119,4 @@ if __name__ == "__main__":
             "please wait until server has fully started"
         )
     )
-    load_data_and_model()
     app.run()
