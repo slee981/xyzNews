@@ -4,4 +4,4 @@ flask==1.0.3
 tensorflow==1.14.0
 tqdm
 wtforms
-gunicorn==19.3.0
+gunicorn==19.5.0
