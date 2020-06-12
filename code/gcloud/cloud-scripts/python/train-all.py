@@ -102,8 +102,8 @@ def send_text(message):
 def train(df, file_out):
 
     '''
-       INPUT... a dataframe with 'clean_articles' and 'targets'
-       OUTPUT.. a file with the parameters and results of each run 
+        INPUT... a dataframe with 'clean_articles' and 'targets'
+        OUTPUT.. a file with the parameters and results of each run 
     '''
 
     # Set headers on output file
